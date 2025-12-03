@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export default function ResponsesPage() {
+
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen w-full bg-black p-10 flex justify-center items-start">
@@ -7,6 +11,7 @@ export default function ResponsesPage() {
         <h1 className="text-3xl font-bold text-white mb-8 text-center drop-shadow">Navigation</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
           <button
             className="bg-white/20 hover:bg-white/30 transition shadow-xl rounded-xl p-6 w-full text-center border border-white/30 backdrop-blur-md cursor-pointer"
           >
@@ -14,6 +19,7 @@ export default function ResponsesPage() {
           </button>
 
           <button
+            onClick={() => navigate("/manage")}
             className="bg-white/20 hover:bg-white/30 transition shadow-xl rounded-xl p-6 w-full text-center border border-white/30 backdrop-blur-md cursor-pointer"
           >
             <h2 className="text-xl font-semibold text-white drop-shadow mb-1">Manage Questions</h2>
@@ -27,7 +33,6 @@ export default function ResponsesPage() {
 
         </div>
       </div>
-
     </div>
   );
 }

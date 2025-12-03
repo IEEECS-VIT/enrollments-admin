@@ -1,12 +1,14 @@
-import AdminDashboard from "./pages/dashboard";
-import Manage from "./pages/questions.jsx/manage";
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/login";
+import Manage from "./pages/questions/manage";
+import DashboardPage from "./pages/dashboard";
 
 export default function App() {
   return (
-    <div className="h-screen flex items-center justify-center">
-       {/*<AdminDashboard />*/}
-       <Manage />
-      </div>
-
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/manage" element={<Manage />} />
+    </Routes>
   );
 }
