@@ -46,9 +46,8 @@ export default function Manage() {
       if (imageFile) formData.append("image", imageFile);
 
       
-      await api.post("/admin/questions", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.post("/admin/questions", formData);
+
 
       fetchQuestions();
       setNewQuestion("");
