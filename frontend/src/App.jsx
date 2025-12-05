@@ -4,6 +4,7 @@ import Manage from "./pages/manage";
 import DashboardPage from "./pages/dashboard";
 import ResponsePage from "./pages/responses"
 import Admin from "./pages/rbac";
+import Schedule from "./pages/responses";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Route path="/admin" element={<Admin />} />
       <Route path="/response" element={<ResponsePage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/schedule" element={<Schedule />} />
       <Route path="/manage" element={<Manage />} />
     </Routes>
   );
