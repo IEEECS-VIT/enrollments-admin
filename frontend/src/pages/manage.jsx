@@ -1,6 +1,6 @@
-import api from "../../api/admin";
+import api from "../api/admin";
 import { useEffect, useState } from "react";
-import { auth } from "../../../firebase";
+import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function Manage() {
@@ -13,17 +13,21 @@ export default function Manage() {
   const [correctIndex, setCorrectIndex] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [userLoaded, setUserLoaded] = useState(false);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) fetchQuestions();
-    });
-    return () => unsub();
-  }, []);
 
-  useEffect(() => {
-    if (auth.currentUser) fetchQuestions();
-  }, [category]);
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    setUserLoaded(true);   // auth is ready
+    if (user) fetchQuestions();
+  });
+  return () => unsub();
+}, []);
+
+useEffect(() => {
+  if (auth.currentUser && userLoaded) fetchQuestions();
+}, [category, userLoaded]);
+
 
   const handleAddQuestion = async () => {
     if (!newQuestion.trim()) return;
@@ -155,13 +159,10 @@ export default function Manage() {
               <option value="WEB" className="bg-black">Web</option>
               <option value="UI/UX" className="bg-black">UI/UX</option>
               <option value="GRAPHIC DESIGN" className="bg-black">Graphic Design</option>
-              <option value="VIDEO EDITING" className="bg-black">Video Editing</option>
               <option value="EVENTS" className="bg-black">Events</option>
               <option value="PNM" className="bg-black">PnM</option>
-              <option value="IOT" className="bg-black">IoT</option>
               <option value="APP" className="bg-black">App</option>
               <option value="AI/ML" className="bg-black">AI/ML</option>
-              <option value="RND" className="bg-black">RnD</option>
               <option value="CC" className="bg-black">Cloud Computing</option>
             </select>
 

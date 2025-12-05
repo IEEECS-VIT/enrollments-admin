@@ -13,9 +13,10 @@ export default function ResponsesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
           <button
+            onClick={()=>navigate("/admin")}
             className="bg-white/20 hover:bg-white/30 transition shadow-xl rounded-xl p-6 w-full text-center border border-white/30 backdrop-blur-md cursor-pointer"
           >
-            <h2 className="text-xl font-semibold text-white drop-shadow mb-1">Profile Page</h2>
+            <h2 className="text-xl font-semibold text-white drop-shadow mb-1">Roles</h2>
           </button>
 
           <button
@@ -26,6 +27,7 @@ export default function ResponsesPage() {
           </button>
 
           <button
+          onClick={()=>navigate("/response")}
             className="bg-white/20 hover:bg-white/30 transition shadow-xl rounded-xl p-6 w-full text-center border border-white/30 backdrop-blur-md cursor-pointer"
           >
             <h2 className="text-xl font-semibold text-white drop-shadow mb-1">View Responses</h2>
