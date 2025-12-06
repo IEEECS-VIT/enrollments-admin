@@ -5,15 +5,11 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState({
-    name: "",
-    email: ""
-  });
+  const [userInfo, setUserInfo] = useState({ name: "", email: "" });
 
   const navigate = useNavigate();
   const INACTIVITY_LIMIT = 5 * 60 * 1000;
   let inactivityTimer;
-
 
   const resetTimer = () => {
     if (!loggedIn) return;
@@ -23,24 +19,22 @@ export default function Login() {
 
   useEffect(() => {
     const events = ["mousemove", "keydown", "click", "touchstart"];
-    events.forEach((event) => window.addEventListener(event, resetTimer));
-    return () => events.forEach((event) => window.removeEventListener(event, resetTimer));
+    events.forEach((e) => window.addEventListener(e, resetTimer));
+    return () => events.forEach((e) => window.removeEventListener(e, resetTimer));
   }, [loggedIn]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const role = getRole(user.email);
         setUserInfo({
-          name: user.displayName || "Unknown User",
-          email: user.email || "",
-          role
+          name: user.displayName || "",
+          email: user.email || ""
         });
         setLoggedIn(true);
         resetTimer();
       } else {
         setLoggedIn(false);
-        setUserInfo({ name: "", email: "", role: "" });
+        setUserInfo({ name: "", email: "" });
       }
     });
     return () => unsub();
@@ -49,11 +43,9 @@ export default function Login() {
   const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const role = getRole(result.user.email);
       setUserInfo({
         name: result.user.displayName,
-        email: result.user.email,
-        role
+        email: result.user.email
       });
       setLoggedIn(true);
       resetTimer();
@@ -73,12 +65,9 @@ export default function Login() {
   const goToDashboard = () => navigate("/dashboard");
 
   return (
-    <div className="h-screen w-full bg-black to-neutral-900 flex justify-center items-center">
+    <div className="h-screen w-full bg-black flex justify-center items-center">
       <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-10 w-full max-w-md text-center shadow-2xl">
-
-        <h1 className="text-3xl font-bold text-white mb-10 tracking-wide">
-          Admin Login
-        </h1>
+        <h1 className="text-3xl font-bold text-white mb-10 tracking-wide">Admin Login</h1>
 
         {!loggedIn && (
           <button

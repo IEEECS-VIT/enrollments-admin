@@ -4,7 +4,7 @@ import Manage from "./pages/manage";
 import DashboardPage from "./pages/dashboard";
 import ResponsePage from "./pages/responses"
 import Admin from "./pages/rbac";
-import Schedule from "./pages/responses";
+import Schedule from "./pages/scheduling";
 
 export default function App() {
   return (
