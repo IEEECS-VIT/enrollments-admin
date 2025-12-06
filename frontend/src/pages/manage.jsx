@@ -13,69 +13,27 @@ export default function Manage() {
   const [correctIndex, setCorrectIndex] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [userLoaded, setUserLoaded] = useState(false);
+  const [userReady, setUserReady] = useState(false);
 
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setUserReady(true);
+      if (user) fetchQuestions();
+    });
+    return () => unsub();
+  }, []);
 
-useEffect(() => {
-  const unsub = onAuthStateChanged(auth, (user) => {
-    setUserLoaded(true);   // auth is ready
-    if (user) fetchQuestions();
-  });
-  return () => unsub();
-}, []);
-
-useEffect(() => {
-  if (auth.currentUser && userLoaded) fetchQuestions();
-}, [category, userLoaded]);
-
-
-  const handleAddQuestion = async () => {
-    if (!newQuestion.trim()) return;
-
-    try {
-      const formData = new FormData();
-      formData.append("domain", category);
-      formData.append("round", "1");
-      formData.append("question", newQuestion);
-
-      if (questionType === "MCQ") {
-        const filtered = mcqOptions.filter((o) => o.trim() !== "");
-        formData.append("options", JSON.stringify(filtered));
-
-        if (correctIndex !== "") {
-          formData.append("correctIndex", Number(correctIndex));
-        }
-      }
-
-      if (imageFile) formData.append("image", imageFile);
-
-      
-      await api.post("/admin/questions", formData);
-
-
-      fetchQuestions();
-      setNewQuestion("");
-      setMcqOptions([""]);
-      setCorrectIndex("");
-      setImageFile(null);
-      setImagePreview(null);
-
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  useEffect(() => {
+    if (userReady && auth.currentUser) fetchQuestions();
+  }, [category]);
 
   const fetchQuestions = async () => {
     try {
-      const user = auth.currentUser;
-      if (!user) return;
-
-    
       const res = await api.get("/admin/questions", {
         params: { domain: category, round: 1 },
       });
 
-      if (res.status === 204 || !res.data) {
+      if (!res.data || res.status === 204) {
         setQuestions([]);
         return;
       }
@@ -104,16 +62,48 @@ useEffect(() => {
       ];
 
       setQuestions(formatted);
-
     } catch (err) {
       console.error("Fetch error:", err);
     }
   };
 
+  const handleAddQuestion = async () => {
+    if (!newQuestion.trim()) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("domain", category);
+      formData.append("round", "1");
+      formData.append("question", newQuestion);
+
+      if (questionType === "MCQ") {
+        const filtered = mcqOptions.filter((o) => o.trim() !== "");
+        formData.append("options", JSON.stringify(filtered));
+        if (correctIndex !== "") {
+          formData.append("correctIndex", Number(correctIndex));
+        }
+      }
+
+      if (imageFile) formData.append("image", imageFile);
+
+      await api.post("/admin/questions", formData);
+
+      setNewQuestion("");
+      setMcqOptions([""]);
+      setCorrectIndex("");
+      setImageFile(null);
+      setImagePreview(null);
+
+      fetchQuestions();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const addOptionField = () => setMcqOptions([...mcqOptions, ""]);
-  const updateOption = (idx, val) => {
+  const updateOption = (i, val) => {
     const arr = [...mcqOptions];
-    arr[idx] = val;
+    arr[i] = val;
     setMcqOptions(arr);
   };
 
@@ -135,10 +125,10 @@ useEffect(() => {
   return (
     <div className="min-h-screen w-full bg-black p-6 sm:p-10 flex justify-center">
       <div className="bg-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-5xl border border-white/20">
+        <h1 className="text-3xl font-bold text-white mb-8 text-center">
+          Manage Questions
+        </h1>
 
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">Manage Questions</h1>
-
-     
         <div className="bg-white/20 border border-white/30 rounded-xl p-6 mb-10">
           <h2 className="text-xl font-semibold text-white mb-4">Add New Question</h2>
 
@@ -156,14 +146,14 @@ useEffect(() => {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              <option value="WEB" className="bg-black">Web</option>
-              <option value="UI/UX" className="bg-black">UI/UX</option>
-              <option value="GRAPHIC DESIGN" className="bg-black">Graphic Design</option>
-              <option value="EVENTS" className="bg-black">Events</option>
-              <option value="PNM" className="bg-black">PnM</option>
-              <option value="APP" className="bg-black">App</option>
-              <option value="AI/ML" className="bg-black">AI/ML</option>
-              <option value="CC" className="bg-black">Cloud Computing</option>
+              <option value="WEB">Web</option>
+              <option value="UI/UX">UI/UX</option>
+              <option value="GRAPHIC DESIGN">Graphic Design</option>
+              <option value="EVENTS">Events</option>
+              <option value="PNM">PnM</option>
+              <option value="APP">App</option>
+              <option value="AI/ML">AI/ML</option>
+              <option value="CC">Cloud Computing</option>
             </select>
 
             <select
@@ -177,12 +167,11 @@ useEffect(() => {
                 }
               }}
             >
-              <option value="MCQ" className="bg-black">MCQ</option>
-              <option value="Short Answer" className="bg-black">Short Answer</option>
+              <option value="MCQ">MCQ</option>
+              <option value="Short Answer">Short Answer</option>
             </select>
           </div>
 
-      
           <div className="mt-6">
             <h3 className="text-lg text-white mb-2">Attach Image (Optional)</h3>
 
@@ -194,11 +183,13 @@ useEffect(() => {
             />
 
             {imagePreview && (
-              <img src={imagePreview} className="mt-4 w-40 rounded-lg border border-white/30" />
+              <img
+                src={imagePreview}
+                className="mt-4 w-40 rounded-lg border border-white/30"
+              />
             )}
           </div>
 
-       
           {questionType === "MCQ" && (
             <div className="mt-4">
               <h3 className="text-lg text-white mb-2">MCQ Options</h3>
@@ -244,7 +235,6 @@ useEffect(() => {
           </button>
         </div>
 
-      
         <input
           type="text"
           placeholder="Search..."
@@ -253,7 +243,6 @@ useEffect(() => {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-    
         <div className="bg-white/10 border border-white/30 rounded-xl p-6">
           <h2 className="text-xl text-white mb-4">All Questions</h2>
 
@@ -262,12 +251,17 @@ useEffect(() => {
           ) : (
             <ul className="space-y-4">
               {filteredQuestions.map((q) => (
-                <li key={q.id} className="p-4 bg-white/10 border border-white/20 rounded-xl">
+                <li
+                  key={q.id}
+                  className="p-4 bg-white/10 border border-white/20 rounded-xl"
+                >
                   <p className="text-white font-medium">{q.text}</p>
                   <p className="text-gray-300 text-sm">Category: {q.category}</p>
                   <p className="text-gray-400 text-sm">Type: {q.type}</p>
 
-                  {q.image && <img src={q.image} className="mt-2 w-32 rounded-lg" />}
+                  {q.image && (
+                    <img src={q.image} className="mt-2 w-32 rounded-lg" />
+                  )}
 
                   {q.type === "MCQ" && (
                     <>
@@ -287,7 +281,6 @@ useEffect(() => {
             </ul>
           )}
         </div>
-
       </div>
     </div>
   );
