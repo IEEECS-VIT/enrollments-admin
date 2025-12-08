@@ -52,7 +52,7 @@ export default function AdminResponses() {
         <div className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl border border-white/20 shadow-2xl grid sm:grid-cols-3 gap-5 mb-10">
 
           <select
-            className="p-3 bg-black/30 border border-white/20 rounded-xl"
+            className="p-3 bg-black border border-white/20 rounded-xl"
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
           >
@@ -65,7 +65,7 @@ export default function AdminResponses() {
           </select>
 
           <select
-            className="p-3 bg-black/30 border border-white/20 rounded-xl"
+            className="p-3 bg-black border border-white/20 rounded-xl"
             value={round}
             onChange={(e) => setRound(Number(e.target.value))}
           >
@@ -74,7 +74,7 @@ export default function AdminResponses() {
           </select>
 
           <select
-            className="p-3 bg-black/30 border border-white/20 rounded-xl"
+            className="p-3 bg-black border border-white/20 rounded-xl"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           >
