@@ -10,141 +10,107 @@ export default function AdminResponses() {
   const [status, setStatus] = useState("unmarked");
   const [loading, setLoading] = useState(true);
 
-  const [searchEmail, setSearchEmail] = useState("");
-  const [searchedUser, setSearchedUser] = useState(null);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) fetchResponses();
-    });
-    return () => unsub();
-  }, []);
-
-  useEffect(() => {
-    if (auth.currentUser) fetchResponses();
-  }, [domain, round, status]);
-
   const fetchQuestions = async () => {
-    try {
-      const res = await api.get("/admin/questions", {
-        params: { domain, round }
-      });
+    const res = await api.get("/admin/questions", {
+      params: { domain, round }
+    });
 
-      const mcq = res.data?.mcq_questions || [];
-      return mcq;
-    } catch (e) {
-      console.log("Question fetch error:", e);
-      return [];
-    }
+    return {
+      mcq: res.data?.mcq_questions || [],
+      desc: res.data?.desc_questions || []
+    };
   };
 
-  const calculateScore = (userAnswers, mcqQuestions) => {
+  const extractAnswers = (user) => {
+    if (round === 1) return user.round1 || [];
+
+    if (domain === "WEB" && round === 2) {
+      if (user.track === "FRONTEND") return user.frontend || [];
+      if (user.track === "BACKEND") return user.backend || [];
+      return [];
+    }
+
+    return user.round2 || [];
+  };
+
+  const calculateScore = (answers, mcq) => {
     let score = 0;
 
-    userAnswers.forEach((ans, i) => {
-      const q = mcqQuestions[i];
-      if (!q) return;
+    mcq.forEach((q, index) => {
+      const correctIdx = Number(q.correctIndex);
+      const userAns = answers[index];
 
-      if (q.correctIndex !== undefined && ans.answer === q.options[q.correctIndex]) {
-        score++;
-      }
+      if (userAns == null) return;
+
+      const isCorrect =
+        userAns.toString().trim() === correctIdx.toString() ||
+        userAns.toString().trim() === q.options[correctIdx];
+
+      if (isCorrect) score++;
     });
 
     return score;
   };
 
   const fetchResponses = async () => {
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      const res = await api.get("/admin/fetch", {
-        params: { domain, round, status }
-      });
+    const res = await api.get("/admin/fetch", {
+      params: { domain, round, status }
+    });
 
-      const items = Array.isArray(res.data?.items) ? res.data.items : [];
+    let raw = [];
 
-      const mcqQuestions = await fetchQuestions();
-
-      const computed = items.map((user) => ({
-        ...user,
-        score: calculateScore(user.answers || [], mcqQuestions)
-      }));
-
-      setResponses(computed);
-    } catch (err) {
-      console.error("Fetch error:", err);
-    } finally {
-      setLoading(false);
+    if (domain === "WEB" && round === 2) {
+      const rd = res.data?.items?.round2 || {};
+      raw = [
+        ...(rd.FRONTEND || []).map((u) => ({ ...u, track: "FRONTEND" })),
+        ...(rd.BACKEND || []).map((u) => ({ ...u, track: "BACKEND" }))
+      ];
+    } else {
+      raw = res.data?.items || [];
     }
+
+    const { mcq, desc } = await fetchQuestions();
+
+    const computed = raw.map((user) => {
+      const answers = extractAnswers(user);
+
+      return {
+        ...user,
+        answers,
+        score: calculateScore(answers, mcq),
+        mcqQuestions: mcq,
+        descQuestions: desc
+      };
+    });
+
+    setResponses(computed);
+    setLoading(false);
   };
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => u && fetchResponses());
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    auth.currentUser && fetchResponses();
+  }, [domain, round, status]);
 
   const markUser = async (email, newStatus) => {
-    try {
-      await api.post("/admin/qualify", {
-        user_email: email,
-        domain,
-        status: newStatus,
-        round
-      });
-
-      fetchResponses();
-    } catch (err) {
-      console.log("Qualify error:", err);
-    }
-  };
-
-  const deleteUser = async (email) => {
-    try {
-      await api.post("/admin/delete-responses", null, {
-        params: { email }
-      });
-
-      fetchResponses();
-    } catch (err) {
-      console.log("Delete error:", err);
-    }
-  };
-
-  const searchUser = async () => {
-    try {
-      const res = await api.get("/admin/search", {
-        params: { email: searchEmail }
-      });
-
-      setSearchedUser(res.data);
-    } catch (err) {
-      setSearchedUser(null);
-    }
+    await api.post("/admin/qualify", {
+      user_email: email,
+      domain,
+      status: newStatus,
+      round
+    });
+    fetchResponses();
   };
 
   return (
     <div className="min-h-screen bg-black text-white px-6 py-12">
       <h1 className="text-4xl font-bold text-center mb-10">Review Responses</h1>
-
-
-      <div className="max-w-xl mx-auto mb-10 flex gap-3">
-        <input
-          type="text"
-          placeholder="Search by email"
-          className="flex-1 p-3 rounded-xl bg-neutral-800 text-white"
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-        />
-        <button
-          onClick={searchUser}
-          className="px-6 bg-yellow-500 text-black rounded-xl font-semibold"
-        >
-          Search
-        </button>
-      </div>
-
-      {searchedUser && (
-        <div className="max-w-xl mx-auto bg-neutral-900 p-5 rounded-2xl border border-neutral-700 mb-10">
-          <p className="font-bold text-xl">{searchedUser.email}</p>
-          <p className="text-neutral-300 mt-2">Round 1: {JSON.stringify(searchedUser.status1)}</p>
-          <p className="text-neutral-300 mt-2">Round 2: {JSON.stringify(searchedUser.status2)}</p>
-        </div>
-      )}
 
       <div className="bg-neutral-900 p-6 rounded-2xl max-w-4xl mx-auto mb-10 grid grid-cols-3 gap-4">
         <select
@@ -153,12 +119,12 @@ export default function AdminResponses() {
           onChange={(e) => setDomain(e.target.value)}
         >
           <option value="WEB">WEB</option>
-          <option value="EVENTS">UI/UX</option>
-          <option value="PNM">UI/UX</option>
+          <option value="EVENTS">EVENTS</option>
+          <option value="PNM">PNM</option>
           <option value="UI/UX">UI/UX</option>
           <option value="APP">APP</option>
           <option value="AI/ML">AI/ML</option>
-          <option value="CC">Competitive</option>
+          <option value="CC">Competitive Coding</option>
         </select>
 
         <select
@@ -182,7 +148,9 @@ export default function AdminResponses() {
       </div>
 
       {loading ? (
-        <p className="text-center text-neutral-400 animate-pulse">Fetching responses…</p>
+        <p className="text-center text-neutral-400 animate-pulse">
+          Fetching responses…
+        </p>
       ) : (
         <div className="space-y-5 max-w-4xl mx-auto">
           {responses.map((user, idx) => (
@@ -195,35 +163,72 @@ export default function AdminResponses() {
                 <span className="text-yellow-400">Score: {user.score}</span>
               </summary>
 
-              <div className="mt-4 space-y-3">
-                {user.answers?.map((ans, q) => (
-                  <div key={q} className="bg-black/40 p-4 rounded-xl">
-                    <p className="text-neutral-400">Q{q + 1}</p>
+              <div className="mt-6 space-y-6">
+ 
+                {user.mcqQuestions.map((q, i) => {
+                  const userAnsRaw = user.answers[i];
+                  const correctIdx = Number(q.correctIndex);
+                  const userIdx = Number(userAnsRaw);
 
-                    <p className="font-semibold mt-1">{ans.question}</p>
+                  return (
+                    <div key={i} className="bg-black/40 p-5 rounded-xl">
+                      <p className="text-neutral-400">Q{i + 1}</p>
+                      <p className="font-semibold mt-1">{q.question}</p>
 
-                    <p className="text-green-400 mt-2">{ans.answer}</p>
-                  </div>
-                ))}
+                      {q.options.map((opt, optIdx) => {
+                        const isCorrect = optIdx === correctIdx;
+                        const isUser = optIdx === userIdx;
 
-                <div className="flex gap-4 mt-4">
+                        let bg = "bg-neutral-800 text-neutral-300";
+
+                        if (isUser && isCorrect)
+                          bg = "bg-green-600 text-black font-bold";
+                        else if (isUser && !isCorrect)
+                          bg = "bg-yellow-500 text-black font-bold";
+                        else if (!isUser && isCorrect)
+                          bg = "bg-green-900 border border-green-500";
+
+                        return (
+                          <p
+                            key={optIdx}
+                            className={`px-3 py-2 rounded-lg mt-2 ${bg}`}
+                          >
+                            {optIdx + 1}. {opt}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+
+                {user.descQuestions.map((q, i) => {
+                  const idx = user.mcqQuestions.length + i;
+                  const userAns = user.answers[idx];
+
+                  return (
+                    <div key={i} className="bg-black/40 p-5 rounded-xl">
+                      <p className="text-neutral-400">
+                        Q{user.mcqQuestions.length + i + 1}
+                      </p>
+                      <p className="font-semibold mt-1">{q.question}</p>
+                      <p className="text-green-400 mt-3">{userAns}</p>
+                    </div>
+                  );
+                })}
+
+                <div className="flex gap-4 mt-6">
                   <button
                     className="bg-green-600 px-4 py-2 rounded-xl"
                     onClick={() => markUser(user.email, "qualified")}
                   >
                     Qualify
                   </button>
+
                   <button
                     className="bg-red-600 px-4 py-2 rounded-xl"
                     onClick={() => markUser(user.email, "unqualified")}
                   >
                     Disqualify
-                  </button>
-                  <button
-                    className="bg-yellow-600 px-4 py-2 rounded-xl text-black"
-                    onClick={() => deleteUser(user.email)}
-                  >
-                    Delete Responses
                   </button>
                 </div>
               </div>
