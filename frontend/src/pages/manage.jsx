@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
+
 export default function Manage() {
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
@@ -124,6 +125,7 @@ export default function Manage() {
 
   return (
     <div className="min-h-screen w-full bg-black p-6 sm:p-10 flex justify-center">
+      
       <div className="bg-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-5xl border border-white/20">
         <h1 className="text-3xl font-bold text-white mb-8 text-center">
           Manage Questions
@@ -146,14 +148,13 @@ export default function Manage() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              <option value="WEB">Web</option>
-              <option value="UI/UX">UI/UX</option>
-              <option value="GRAPHIC DESIGN">Graphic Design</option>
-              <option value="EVENTS">Events</option>
-              <option value="PNM">PnM</option>
-              <option value="APP">App</option>
-              <option value="AI/ML">AI/ML</option>
-              <option value="CC">Cloud Computing</option>
+          <option value="WEB">WEB</option>
+          <option value="EVENTS">UI/UX</option>
+          <option value="PNM">UI/UX</option>
+          <option value="UI/UX">UI/UX</option>
+          <option value="APP">APP</option>
+          <option value="AI/ML">AI/ML</option>
+          <option value="CC">Competitive</option>
             </select>
 
             <select
@@ -283,5 +284,6 @@ export default function Manage() {
         </div>
       </div>
     </div>
+
   );
 }

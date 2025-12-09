@@ -80,7 +80,7 @@ export default function AdminManagement() {
   if (loading)
     return (
       <div className="h-screen bg-black flex items-center justify-center text-neutral-400 text-xl">
-        Loading...
+        wait dude...
       </div>
     );
 
