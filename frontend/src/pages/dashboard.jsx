@@ -6,7 +6,7 @@ export default function ResponsesPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-black via-neutral-950 to-yellow-600 p-10 flex justify-center items-center">
+    <div className="min-h-screen w-full bg-black p-10 flex justify-center items-center">
       
       <div className="bg-white/10  p-10 rounded-3xl w-full max-w-4xl border border-yellow-500/20">
 

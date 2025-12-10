@@ -127,9 +127,16 @@ export default function Manage() {
     <div className="min-h-screen w-full bg-black p-6 sm:p-10 flex justify-center">
       
       <div className="bg-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-5xl border border-white/20">
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">
-          Manage Questions
-        </h1>
+<div className="flex justify-left mb-6 gap-28">
+                <img
+                  src="/logo.png"
+                  alt="IEEE Computer Society Logo"
+                  className="h-10 md:h-16 w-auto "
+                />
+                <h1 className="text-4xl font-extrabold text-white tracking-wide text-center mb-10">
+                Manage Questions
+              </h1>
+            </div>
 
         <div className="bg-white/20 border border-white/30 rounded-xl p-6 mb-10">
           <h2 className="text-xl font-semibold text-white mb-4">Add New Question</h2>

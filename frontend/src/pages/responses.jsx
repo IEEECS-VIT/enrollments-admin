@@ -183,6 +183,7 @@ export default function AdminResponses() {
 
                         if (isUser && isCorrect)
                           bg = "bg-green-600 text-black font-bold";
+                        
                         else if (isUser && !isCorrect)
                           bg = "bg-yellow-500 text-black font-bold";
                         else if (!isUser && isCorrect)

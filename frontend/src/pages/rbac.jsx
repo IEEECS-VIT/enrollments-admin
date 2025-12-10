@@ -85,7 +85,7 @@ export default function AdminManagement() {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-black via-neutral-900 to-black text-white px-6 py-16 flex flex-col items-center">
-      <h1 className="text-5xl font-extrabold tracking-tight mb-16 text-center bg-gradient-to-r from-yellow-500 to-yellow-300 bg-clip-text text-transparent drop-shadow-lg">
+      <h1 className="text-5xl font-bold tracking-tight mb-16 text-center text-white bg-clip-text text-transparent drop-shadow-lg">
         Sub Admin Control Panel
       </h1>
 
@@ -142,7 +142,7 @@ export default function AdminManagement() {
             />
 
             <div>
-              <h3 className="text-xl font-semibold mb-4 text-yellow-400">
+              <h3 className="text-xl font-semibold mb-4 text-white">
                 Assign Domains
               </h3>
 
