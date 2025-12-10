@@ -72,7 +72,7 @@ export default function Login() {
         </div>
 
 
-          <h1 className="text-3xl font-extrabold text-yellow-300 mt-6 tracking-tight">Admin Login</h1>
+          <h1 className="text-3xl font-bold text-white mt-6 tracking-tight">Admin Login</h1>
           
 
           {!loggedIn && (
@@ -95,7 +95,7 @@ export default function Login() {
                 {userInfo.name ? userInfo.name.charAt(0).toUpperCase() : "U"}
               </div>
               <div className="text-left">
-                <div className="text-yellow-200 font-semibold">{userInfo.name}</div>
+                <div className="text-white font-semibold">{userInfo.name}</div>
                 <div className="text-sm text-yellow-100/70">{userInfo.email}</div>
               </div>
             </div>
@@ -105,7 +105,7 @@ export default function Login() {
             onClick={goToDashboard}
             disabled={!loggedIn}
             className={`mt-6 w-full py-3 rounded-xl text-lg font-semibold transition shadow-lg ${
-              loggedIn ? "bg-black/80 border border-yellow-400 text-yellow-300 hover:bg-black/70" : "bg-neutral-800 text-neutral-400 cursor-not-allowed"
+              loggedIn ? "bg-black/80 border border-yellow-400 text-white hover:bg-black/70" : "bg-neutral-800 text-neutral-400 cursor-not-allowed"
             }`}
           >
             Go to Dashboard
