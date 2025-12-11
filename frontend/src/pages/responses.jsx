@@ -9,7 +9,7 @@ export default function AdminResponses() {
   const [round, setRound] = useState(1);
   const [status, setStatus] = useState("unmarked");
   const [loading, setLoading] = useState(true);
-
+  
   const fetchQuestions = async () => {
     const res = await api.get("/admin/questions", {
       params: { domain, round }
@@ -33,24 +33,21 @@ export default function AdminResponses() {
     return user.round2 || [];
   };
 
-  const calculateScore = (answers, mcq) => {
-    let score = 0;
+const calculateScore = (answers, mcq) => {
+  let score = 0;
 
-    mcq.forEach((q, index) => {
-      const correctIdx = Number(q.correctIndex);
-      const userAns = answers[index];
+  mcq.forEach((q, i) => {
+    const correctIdx = Number(q.correctIndex);
+    const userIdx = Number(answers[i]);
 
-      if (userAns == null) return;
+    if (userIdx === correctIdx) {
+      score++;
+    }
+  });
 
-      const isCorrect =
-        userAns.toString().trim() === correctIdx.toString() ||
-        userAns.toString().trim() === q.options[correctIdx];
+  return score;
+};
 
-      if (isCorrect) score++;
-    });
-
-    return score;
-  };
 
   const fetchResponses = async () => {
     setLoading(true);
@@ -119,13 +116,14 @@ return (
         value={domain}
         onChange={(e) => setDomain(e.target.value)}
       >
-        <option value="WEB">WEB</option>
-        <option value="EVENTS">EVENTS</option>
-        <option value="PNM">PNM</option>
-        <option value="UI/UX">UI/UX</option>
-        <option value="APP">APP</option>
-        <option value="AI/ML">AI/ML</option>
-        <option value="CC">Competitive Coding</option>
+              <option value="WEB" className="bg-black">WEB</option>
+              <option value="APP" className="bg-black">APP</option>
+              <option value="AI/ML" className="bg-black">AI/ML</option>
+              <option value="CC" className="bg-black">CC</option>
+              <option value="EVENTS" className="bg-black">EVENTS</option>
+              <option value="PNM" className="bg-black">PNM</option>
+              <option value="UI/UX" className="bg-black">UI/UX</option>
+              <option value="UI/UX" className="bg-black">Video Editing</option>
       </select>
 
       <select
@@ -160,7 +158,24 @@ return (
             className="bg-neutral-900 p-4 sm:p-6 rounded-2xl border border-neutral-700"
           >
             <summary className="cursor-pointer flex flex-col sm:flex-row sm:justify-between gap-2 text-lg font-semibold">
-              <span className="break-all text-sm sm:text-base">{user.email}</span>
+              <span className="break-all text-sm sm:text-base flex justify-end items-center gap-4">
+              {user.email}
+
+              <button
+                className="bg-green-600 px-4 py-2 rounded-xl w-full sm:w-auto"
+                onClick={() => markUser(user.email, "qualified")}
+              >
+                Qualify
+              </button>
+
+              <button
+                className="bg-red-600 px-4 py-2 rounded-xl w-full sm:w-auto"
+                onClick={() => markUser(user.email, "unqualified")}
+              >
+                Disqualify
+              </button>
+            </span>
+
               <span className="text-yellow-400 text-sm sm:text-base">
                 Score: {user.score}
               </span>
@@ -168,38 +183,33 @@ return (
 
             <div className="mt-6 space-y-6">
 
-              {user.mcqQuestions.map((q, i) => {
-                const userAnsRaw = user.answers[i];
-                const correctIdx = Number(q.correctIndex);
-                const userIdx = Number(userAnsRaw);
+             {user.mcqQuestions.map((q, i) => {
+  const userAnsRaw = user.answers[i];
+  const correctIdx = Number(q.correctIndex);
+  const userIdx = Number(userAnsRaw);
 
-                return (
-                  <div key={i} className="bg-black/40 p-4 rounded-xl text-sm sm:text-base">
-                    <p className="text-neutral-400">Q{i + 1}</p>
-                    <p className="font-semibold mt-1">{q.question}</p>
+  return (
+          <div key={i} className="bg-black/40 p-4 rounded-xl text-sm sm:text-base">
+            <p className="text-neutral-400">Q{i + 1}</p>
 
-                    {q.options.map((opt, optIdx) => {
-                      const isCorrect = optIdx === correctIdx;
-                      const isUser = optIdx === userIdx;
+            <p className="font-semibold mt-1">{q.question}</p>
 
-                      let bg = "bg-neutral-800 text-neutral-300";
+            {q.options.map((opt, optIdx) => (
+              <p key={optIdx} className="px-3 py-2 rounded-lg mt-2 bg-neutral-800 text-neutral-300">
+                {optIdx + 1}. {opt}
+              </p>
+            ))}
 
-                      if (isUser && isCorrect) bg = "bg-green-600 text-black font-bold";
-                      else if (isUser && !isCorrect) bg = "bg-yellow-500 text-black font-bold";
-                      else if (!isUser && isCorrect) bg = "bg-green-900 border border-green-500";
+            <p className="text-green-400 mt-3">
+              Correct : {correctIdx + 1}
+            </p>
 
-                      return (
-                        <p
-                          key={optIdx}
-                          className={`px-3 py-2 rounded-lg mt-2 ${bg}`}
-                        >
-                          {optIdx + 1}. {opt}
-                        </p>
-                      );
-                    })}
-                  </div>
-                );
-              })}
+            <p className="text-yellow-400">
+              User : {userIdx+1}
+            </p>
+          </div>
+        );
+        })}
 
               {user.descQuestions.map((q, i) => {
                 const idx = user.mcqQuestions.length + i;
@@ -216,21 +226,7 @@ return (
                 );
               })}
 
-              <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                <button
-                  className="bg-green-600 px-4 py-2 rounded-xl w-full sm:w-auto"
-                  onClick={() => markUser(user.email, "qualified")}
-                >
-                  Qualify
-                </button>
-
-                <button
-                  className="bg-red-600 px-4 py-2 rounded-xl w-full sm:w-auto"
-                  onClick={() => markUser(user.email, "unqualified")}
-                >
-                  Disqualify
-                </button>
-              </div>
+              
 
             </div>
           </details>

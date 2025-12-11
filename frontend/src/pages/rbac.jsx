@@ -8,7 +8,7 @@ export default function AdminManagement() {
   const [subAdmins, setSubAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const DOMAIN_OPTIONS = ["WEB", "AAPP", "AI/ML", "UI/UX", "EVENTS", "PNM","GRAPHIC","VIDEO"];
+  const DOMAIN_OPTIONS = ["WEB", "APP", "AI/ML", "CC","EVENTS", "PNM", "UI/UX","VIDEO"];
 
   const [newAdmin, setNewAdmin] = useState({
     email: "",
@@ -59,6 +59,15 @@ export default function AdminManagement() {
       console.error("Add error:", err);
     }
   };
+const selectAllDomains = () => {
+  setNewAdmin((p) => ({
+    ...p,
+    domains:
+      p.domains.length === DOMAIN_OPTIONS.length
+        ? []                      
+        : [...DOMAIN_OPTIONS]     
+  }));
+};
 
   const removeSubAdmin = async (email) => {
     try {
@@ -106,6 +115,8 @@ return (
               >
                 <p className="text-lg sm:text-xl font-semibold break-all">{admin.email}</p>
                 <p className="text-neutral-300 text-sm mt-2 tracking-wide">
+
+
                   Domains:{" "}
                   <span className="text-yellow-400">
                     {admin.allowed_domains.join(", ")}
@@ -146,17 +157,29 @@ return (
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+             <label className="flex items-center gap-3 text-base sm:text-lg cursor-pointer text-white">
+                <input
+                  type="checkbox"
+                  checked={newAdmin.domains.length === DOMAIN_OPTIONS.length}
+                  onChange={selectAllDomains}
+                  className="accent-yellow-500 scale-110 sm:scale-125"
+                />
+                Select All Domains
+              </label>
+
               {DOMAIN_OPTIONS.map((domain) => (
                 <label
                   key={domain}
                   className="flex items-center gap-3 text-base sm:text-lg cursor-pointer"
                 >
+                  
                   <input
                     type="checkbox"
                     checked={newAdmin.domains.includes(domain)}
                     onChange={() => toggleDomain(domain)}
                     className="accent-yellow-500 scale-110 sm:scale-125"
                   />
+                  
                   {domain}
                 </label>
               ))}
