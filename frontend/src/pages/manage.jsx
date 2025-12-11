@@ -123,49 +123,46 @@ export default function Manage() {
     q.text.toLowerCase().includes(search.toLowerCase())
   );
 
-  return (
-    <div className="min-h-screen w-full bg-black p-6 sm:p-10 flex justify-center">
-      
-      <div className="bg-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-5xl border border-white/20">
-<div className="flex justify-left mb-6 gap-28">
-                <img
-                  src="/logo.png"
-                  alt="IEEE Computer Society Logo"
-                  className="h-10 md:h-16 w-auto "
-                />
-                <h1 className="text-4xl font-extrabold text-white tracking-wide text-center mb-10">
-                Manage Questions
-              </h1>
-            </div>
 
-        <div className="bg-white/20 border border-white/30 rounded-xl p-6 mb-10">
-          <h2 className="text-xl font-semibold text-white mb-4">Add New Question</h2>
+  return (
+    <div className="min-h-screen w-full bg-black p-4 sm:p-8 flex justify-center">
+      <div className="bg-white/10 p-6 sm:p-10 rounded-2xl w-full max-w-5xl border border-yellow-500/20 shadow-xl">
+
+        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 mb-10">
+          <img src="/logo.png" alt="IEEE CS Logo" className="h-12 sm:h-16" />
+          
+        </div>
+
+        <div className="bg-white/10 border border-white/20 rounded-2xl p-6 sm:p-8 mb-10 shadow-lg">
+          <h2 className="text-2xl font-bold text-white mb-6">
+            Add New Question
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
               placeholder="Enter question..."
-              className="p-3 rounded-lg bg-white/10 border border-white/30 text-white"
+              className="p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white"
               value={newQuestion}
               onChange={(e) => setNewQuestion(e.target.value)}
             />
 
             <select
-              className="p-3 rounded-lg bg-white/10 border border-white/30 text-white"
+              className="p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-          <option value="WEB">WEB</option>
-          <option value="EVENTS">UI/UX</option>
-          <option value="PNM">UI/UX</option>
-          <option value="UI/UX">UI/UX</option>
-          <option value="APP">APP</option>
-          <option value="AI/ML">AI/ML</option>
-          <option value="CC">Competitive</option>
+              <option value="WEB" className="bg-black">WEB</option>
+              <option value="EVENTS" className="bg-black">EVENTS</option>
+              <option value="PNM" className="bg-black">PNM</option>
+              <option value="UI/UX" className="bg-black">UI/UX</option>
+              <option value="APP" className="bg-black">APP</option>
+              <option value="AI/ML" className="bg-black">AI/ML</option>
+              <option value="CC" className="bg-black">Competitive Coding</option>
             </select>
 
             <select
-              className="p-3 rounded-lg bg-white/10 border border-white/30 text-white"
+              className="p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white"
               value={questionType}
               onChange={(e) => {
                 setQuestionType(e.target.value);
@@ -181,40 +178,36 @@ export default function Manage() {
           </div>
 
           <div className="mt-6">
-            <h3 className="text-lg text-white mb-2">Attach Image (Optional)</h3>
-
+            <h3 className="text-lg text-white mb-2">Attach Image</h3>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white"
+              className="w-full p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white"
             />
 
             {imagePreview && (
-              <img
-                src={imagePreview}
-                className="mt-4 w-40 rounded-lg border border-white/30"
-              />
+              <img src={imagePreview} className="mt-4 w-40 rounded-xl border border-white/20" />
             )}
           </div>
 
           {questionType === "MCQ" && (
-            <div className="mt-4">
-              <h3 className="text-lg text-white mb-2">MCQ Options</h3>
+            <div className="mt-6">
+              <h3 className="text-lg text-white mb-3">MCQ Options</h3>
 
               {mcqOptions.map((opt, idx) => (
                 <input
                   key={idx}
                   type="text"
                   placeholder={`Option ${idx + 1}`}
-                  className="w-full p-3 my-2 rounded-lg bg-white/10 border border-white/30 text-white"
+                  className="w-full p-3 mb-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white"
                   value={opt}
                   onChange={(e) => updateOption(idx, e.target.value)}
                 />
               ))}
 
               <select
-                className="p-3 rounded-lg bg-black/30 border border-white/30 text-white mt-3"
+                className="p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white mt-2"
                 value={correctIndex}
                 onChange={(e) => setCorrectIndex(e.target.value)}
               >
@@ -228,7 +221,7 @@ export default function Manage() {
 
               <button
                 onClick={addOptionField}
-                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
+                className="mt-4 bg-blue-500 hover:bg-blue-400 text-white px-5 py-2 rounded-xl transition"
               >
                 + Add Option
               </button>
@@ -237,7 +230,7 @@ export default function Manage() {
 
           <button
             onClick={handleAddQuestion}
-            className="mt-6 bg-green-500 text-white px-6 py-3 rounded-lg"
+            className="mt-8 w-full bg-green-500 hover:bg-green-400 transition text-white py-3 rounded-xl text-lg font-bold"
           >
             Add Question
           </button>
@@ -246,40 +239,38 @@ export default function Manage() {
         <input
           type="text"
           placeholder="Search..."
-          className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white mb-6"
+          className="w-full p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white mb-6"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="bg-white/10 border border-white/30 rounded-xl p-6">
-          <h2 className="text-xl text-white mb-4">All Questions</h2>
+        <div className="bg-white/10 border border-white/20 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-2xl text-white mb-4">All Questions</h2>
 
           {filteredQuestions.length === 0 ? (
-            <p className="text-gray-300 text-center py-4">No questions found.</p>
+            <p className="text-neutral-400 text-center py-4">No questions found.</p>
           ) : (
             <ul className="space-y-4">
               {filteredQuestions.map((q) => (
                 <li
                   key={q.id}
-                  className="p-4 bg-white/10 border border-white/20 rounded-xl"
+                  className="p-5 bg-black/20 border border-yellow-500/20 rounded-2xl"
                 >
-                  <p className="text-white font-medium">{q.text}</p>
-                  <p className="text-gray-300 text-sm">Category: {q.category}</p>
-                  <p className="text-gray-400 text-sm">Type: {q.type}</p>
+                  <p className="text-white font-semibold">{q.text}</p>
+                  <p className="text-neutral-400 text-sm">Category: {q.category}</p>
+                  <p className="text-neutral-500 text-sm">Type: {q.type}</p>
 
-                  {q.image && (
-                    <img src={q.image} className="mt-2 w-32 rounded-lg" />
-                  )}
+                  {q.image && <img src={q.image} className="mt-3 w-32 rounded-lg" />}
 
                   {q.type === "MCQ" && (
                     <>
-                      <ul className="mt-2 ml-4 list-disc text-gray-300 text-sm">
+                      <ul className="mt-2 ml-4 list-disc text-neutral-300 text-sm">
                         {q.options.map((opt, idx) => (
                           <li key={idx}>{opt}</li>
                         ))}
                       </ul>
 
-                      <p className="text-green-400 text-sm mt-1">
+                      <p className="text-green-400 text-sm mt-2">
                         Correct: {q.options[q.correctIndex]}
                       </p>
                     </>
@@ -289,8 +280,8 @@ export default function Manage() {
             </ul>
           )}
         </div>
+
       </div>
     </div>
-
   );
 }

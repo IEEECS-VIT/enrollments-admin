@@ -8,7 +8,7 @@ export default function AdminManagement() {
   const [subAdmins, setSubAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const DOMAIN_OPTIONS = ["Web", "App", "AI/ML", "UI/UX", "Events", "PnM"];
+  const DOMAIN_OPTIONS = ["WEB", "AAPP", "AI/ML", "UI/UX", "EVENTS", "PNM","GRAPHIC","VIDEO"];
 
   const [newAdmin, setNewAdmin] = useState({
     email: "",
