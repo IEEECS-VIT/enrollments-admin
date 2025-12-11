@@ -171,14 +171,14 @@ export default function Manage() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="WEB">WEB</option>
-                <option value="APP">APP</option>
-                <option value="AI/ML">AI/ML</option>
-                <option value="CC">CC</option>
-                <option value="EVENTS">EVENTS</option>
-                <option value="PNM">PNM</option>
-                <option value="UI/UX">UI/UX</option>
-                <option value="VIDEO">Video Editing</option>
+                <option value="WEB" className="bg-black">WEB</option>
+                <option value="APP" className="bg-black">APP</option>
+                <option value="AI/ML" className="bg-black">AI/ML</option>
+                <option value="CC" className="bg-black">CC</option>
+                <option value="EVENTS" className="bg-black">EVENTS</option>
+                <option value="PNM" className="bg-black">PNM</option>
+                <option value="UI/UX" className="bg-black">UI/UX</option>
+                <option value="VIDEO" className="bg-black">Video Editing</option>
               </select>
 
               <select
@@ -192,8 +192,8 @@ export default function Manage() {
                   }
                 }}
               >
-                <option value="MCQ">MCQ</option>
-                <option value="Short Answer">Short Answer</option>
+                <option value="MCQ" className="bg-black">MCQ</option>
+                <option value="Short Answer" className="bg-black">Short Answer</option>
               </select>
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function Manage() {
               >
                 <option value="">Select an option</option>
                 {mcqOptions.map((opt, idx) => (
-                  <option key={idx} value={idx} className="bg-gray-800 text-white">
+                  <option key={idx} value={idx} className="bg-black text-white">
                     {opt.trim() || `Option ${idx + 1}`}
                   </option>
                 ))}
