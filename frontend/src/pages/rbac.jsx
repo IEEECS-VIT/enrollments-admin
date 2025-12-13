@@ -92,7 +92,7 @@ const selectAllDomains = () => {
       </div>
     );
 return (
-  <div className="min-h-screen w-full bg-gradient-to-b from-black via-neutral-900 to-black text-white px-4 sm:px-6 py-12 flex flex-col items-center">
+  <div className="min-h-screen w-full bg-black text-white px-4 sm:px-6 py-12 flex flex-col items-center">
     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-10 sm:mb-16 text-center bg-clip-text text-transparent drop-shadow-lg">
       Sub Admin Control Panel
     </h1>

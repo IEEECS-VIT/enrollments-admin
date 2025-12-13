@@ -9,7 +9,7 @@ export default function AdminResponses() {
   const [round, setRound] = useState(1);
   const [status, setStatus] = useState("unmarked");
   const [loading, setLoading] = useState(true);
-  
+
   const fetchQuestions = async () => {
     const res = await api.get("/admin/questions", {
       params: { domain, round }
@@ -33,21 +33,24 @@ export default function AdminResponses() {
     return user.round2 || [];
   };
 
-const calculateScore = (answers, mcq) => {
-  let score = 0;
+  const calculateScore = (answers, mcq) => {
+    let score = 0;
 
-  mcq.forEach((q, i) => {
-    const correctIdx = Number(q.correctIndex);
-    const userIdx = Number(answers[i]);
+    mcq.forEach((q, i) => {
+      const correctAnswer = q.options?.[Number(q.correctIndex)];
+      const userAnswer = answers?.[i];
 
-    if (userIdx === correctIdx) {
-      score++;
-    }
-  });
+      if (
+        correctAnswer !== undefined &&
+        userAnswer !== undefined &&
+        String(userAnswer).trim() === String(correctAnswer).trim()
+      ) {
+        score++;
+      }
+    });
 
-  return score;
-};
-
+    return score;
+  };
 
   const fetchResponses = async () => {
     setLoading(true);
@@ -104,136 +107,141 @@ const calculateScore = (answers, mcq) => {
     });
     fetchResponses();
   };
-return (
-  <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-10">
-    <h1 className="text-3xl sm:text-4xl font-bold text-center mb-10">
-      Review Responses
-    </h1>
-
-    <div className="bg-neutral-900 p-4 sm:p-6 rounded-2xl max-w-4xl mx-auto mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <select
-        className="p-3 rounded-xl bg-black border border-neutral-700 w-full text-sm sm:text-base"
-        value={domain}
-        onChange={(e) => setDomain(e.target.value)}
-      >
-              <option value="WEB" className="bg-black">WEB</option>
-              <option value="APP" className="bg-black">APP</option>
-              <option value="AI/ML" className="bg-black">AI/ML</option>
-              <option value="CC" className="bg-black">CC</option>
-              <option value="EVENTS" className="bg-black">EVENTS</option>
-              <option value="PNM" className="bg-black">PNM</option>
-              <option value="UI/UX" className="bg-black">UI/UX</option>
-              <option value="UI/UX" className="bg-black">Video Editing</option>
-      </select>
-
-      <select
-        className="p-3 rounded-xl bg-black border border-neutral-700 w-full text-sm sm:text-base"
-        value={round}
-        onChange={(e) => setRound(Number(e.target.value))}
-      >
-        <option value="1">Round 1</option>
-        <option value="2">Round 2</option>
-      </select>
-
-      <select
-        className="p-3 rounded-xl bg-black border border-neutral-700 w-full text-sm sm:text-base"
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-      >
-        <option value="unmarked">Unmarked</option>
-        <option value="qualified">Qualified</option>
-        <option value="unqualified">Unqualified</option>
-      </select>
-    </div>
-
-    {loading ? (
-      <p className="text-center text-neutral-400 animate-pulse">
-        Fetching responses…
-      </p>
-    ) : (
-      <div className="space-y-5 max-w-4xl mx-auto">
-        {responses.map((user, idx) => (
-          <details
-            key={idx}
-            className="bg-neutral-900 p-4 sm:p-6 rounded-2xl border border-neutral-700"
-          >
-            <summary className="cursor-pointer flex flex-col sm:flex-row sm:justify-between gap-2 text-lg font-semibold">
-              <span className="break-all text-sm sm:text-base flex justify-end items-center gap-4">
-              {user.email}
-
-              <button
-                className="bg-green-600 px-4 py-2 rounded-xl w-full sm:w-auto"
-                onClick={() => markUser(user.email, "qualified")}
-              >
-                Qualify
-              </button>
-
-              <button
-                className="bg-red-600 px-4 py-2 rounded-xl w-full sm:w-auto"
-                onClick={() => markUser(user.email, "unqualified")}
-              >
-                Disqualify
-              </button>
-            </span>
-
-              <span className="text-yellow-400 text-sm sm:text-base">
-                Score: {user.score}
-              </span>
-            </summary>
-
-            <div className="mt-6 space-y-6">
-
-             {user.mcqQuestions.map((q, i) => {
-  const userAnsRaw = user.answers[i];
-  const correctIdx = Number(q.correctIndex);
-  const userIdx = Number(userAnsRaw);
 
   return (
-          <div key={i} className="bg-black/40 p-4 rounded-xl text-sm sm:text-base">
-            <p className="text-neutral-400">Q{i + 1}</p>
+    <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-10">
+      <h1 className="text-3xl sm:text-4xl font-bold text-center mb-10">
+        Review Responses
+      </h1>
 
-            <p className="font-semibold mt-1">{q.question}</p>
+      <div className="bg-neutral-900 p-4 sm:p-6 rounded-2xl max-w-4xl mx-auto mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <select
+          className="p-3 rounded-xl bg-black border border-neutral-700"
+          value={domain}
+          onChange={(e) => setDomain(e.target.value)}
+        >
+          <option value="WEB">WEB</option>
+          <option value="APP">APP</option>
+          <option value="AI/ML">AI/ML</option>
+          <option value="CC">CC</option>
+          <option value="EVENTS">EVENTS</option>
+          <option value="PNM">PNM</option>
+          <option value="UI/UX">UI/UX</option>
+          <option value="VIDEO EDITING">Video Editing</option>
+        </select>
 
-            {q.options.map((opt, optIdx) => (
-              <p key={optIdx} className="px-3 py-2 rounded-lg mt-2 bg-neutral-800 text-neutral-300">
-                {optIdx + 1}. {opt}
-              </p>
-            ))}
+        <select
+          className="p-3 rounded-xl bg-black border border-neutral-700"
+          value={round}
+          onChange={(e) => setRound(Number(e.target.value))}
+        >
+          <option value={1}>Round 1</option>
+          <option value={2}>Round 2</option>
+        </select>
 
-            <p className="text-green-400 mt-3">
-              Correct : {correctIdx + 1}
-            </p>
-
-            <p className="text-yellow-400">
-              User : {userIdx+1}
-            </p>
-          </div>
-        );
-        })}
-
-              {user.descQuestions.map((q, i) => {
-                const idx = user.mcqQuestions.length + i;
-                const userAns = user.answers[idx];
-
-                return (
-                  <div key={i} className="bg-black/40 p-4 rounded-xl text-sm sm:text-base">
-                    <p className="text-neutral-400">
-                      Q{user.mcqQuestions.length + i + 1}
-                    </p>
-                    <p className="font-semibold mt-1">{q.question}</p>
-                    <p className="text-green-400 mt-3 break-words">{userAns}</p>
-                  </div>
-                );
-              })}
-
-              
-
-            </div>
-          </details>
-        ))}
+        <select
+          className="p-3 rounded-xl bg-black border border-neutral-700"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="unmarked">Unmarked</option>
+          <option value="qualified">Qualified</option>
+          <option value="unqualified">Unqualified</option>
+        </select>
       </div>
-    )}
-  </div>
-);
 
+      {loading ? (
+        <p className="text-center text-neutral-400">Fetching responses…</p>
+      ) : (
+        <div className="space-y-5 max-w-4xl mx-auto">
+          {responses.map((user, idx) => (
+            <details
+              key={idx}
+              className="bg-neutral-900 p-4 sm:p-6 rounded-2xl border border-neutral-700"
+            >
+              <summary className="cursor-pointer flex justify-between text-lg font-semibold">
+                <span className="break-all flex gap-4 items-center">
+                  {user.email}
+                  <button
+                    className="bg-green-600 px-4 py-2 rounded-xl"
+                    onClick={() => markUser(user.email, "qualified")}
+                  >
+                    Qualify
+                  </button>
+                  <button
+                    className="bg-red-600 px-4 py-2 rounded-xl"
+                    onClick={() => markUser(user.email, "unqualified")}
+                  >
+                    Disqualify
+                  </button>
+                </span>
+                <span className="text-yellow-400">
+                  Score: {user.score}
+                </span>
+              </summary>
+
+              <div className="mt-6 space-y-6">
+                {user.mcqQuestions.map((q, i) => {
+                  const correctAnswer = q.options?.[Number(q.correctIndex)];
+                  const userAnswer = user.answers?.[i];
+
+                  return (
+                    <div key={i} className="bg-black/40 p-4 rounded-xl">
+                      <p className="text-neutral-400">Q{i + 1}</p>
+                      <p className="font-semibold mt-1">{q.question}</p>
+
+                      {q.options.map((opt, optIdx) => (
+                        <p
+                          key={optIdx}
+                          className={`px-3 py-2 rounded-lg mt-2 ${
+                            opt === correctAnswer
+                              ? "bg-green-800 text-white"
+                              : opt === userAnswer
+                              ? "bg-red-800 text-white"
+                              : "bg-neutral-800 text-neutral-300"
+                          }`}
+                        >
+                          {optIdx + 1}. {opt}
+                        </p>
+                      ))}
+
+                      <p className="text-green-400 mt-3">
+                        Correct: {correctAnswer ?? "N/A"}
+                      </p>
+                      <p
+                        className={
+                          userAnswer === correctAnswer
+                            ? "text-green-400"
+                            : "text-red-400"
+                        }
+                      >
+                        User: {userAnswer ?? "Not Answered"}
+                      </p>
+                    </div>
+                  );
+                })}
+
+                {user.descQuestions.map((q, i) => {
+                  const idx2 = user.mcqQuestions.length + i;
+                  const userAns = user.answers[idx2];
+
+                  return (
+                    <div key={i} className="bg-black/40 p-4 rounded-xl">
+                      <p className="text-neutral-400">
+                        Q{user.mcqQuestions.length + i + 1}
+                      </p>
+                      <p className="font-semibold mt-1">{q.question}</p>
+                      <p className="text-green-400 mt-3 break-words">
+                        {userAns}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
