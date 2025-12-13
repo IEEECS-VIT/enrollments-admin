@@ -88,7 +88,7 @@ const selectAllDomains = () => {
   if (!isHeadAdmin)
     return (
       <div className="min-h-screen bg-black text-red-500 flex justify-center items-center text-3xl font-semibold tracking-wide">
-        Access Denied
+        Not for you buddy
       </div>
     );
 return (

@@ -52,7 +52,7 @@ export default function Login() {
     await signOut(auth);
     setLoggedIn(false);
     clearTimeout(inactivityTimer);
-    if (auto) alert("You were logged out due to security reasons.");
+    if (auto) alert("You were logged out dude.");
     navigate("/");
   };
 
