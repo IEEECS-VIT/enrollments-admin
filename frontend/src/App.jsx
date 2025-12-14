@@ -5,9 +5,8 @@ import DashboardPage from "./pages/dashboard";
 import ResponsePage from "./pages/responses"
 import Admin from "./pages/rbac";
 import Schedule from "./pages/scheduling";
-import Test from "./pages/card";
 import Create from "./pages/createSlot";
-import View from "./pages/viewSlots"
+import Domain from "./pages/domain"
 
 export default function App() {
   return (
@@ -18,6 +17,7 @@ export default function App() {
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/schedule" element={<Schedule />} />
        <Route path="/create" element={<Create/>} />
+       <Route path="/domain" element={<Domain/>} />
       <Route path="/manage" element={<Manage />} />
     </Routes>
   );

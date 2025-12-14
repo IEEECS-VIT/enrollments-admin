@@ -39,7 +39,7 @@ export default function ResponsesPage() {
 
         <div className="flex justify-center mb-14">
           <button
-            onClick={() => navigate("/domains")}
+            onClick={() => navigate("/domain")}
             className="group bg-black border-yellow-500/40 shadow-xl rounded-2xl px-6 sm:px-10 md:px-12 py-4 sm:py-5 flex items-center gap-4 hover:scale-[1.02] transition"
           >
             <FiGrid className="text-yellow-300 text-2xl group-hover:rotate-3 transition" />
