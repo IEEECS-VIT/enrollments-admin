@@ -11,6 +11,7 @@ import {
   FiTrendingUp
 } from "react-icons/fi";
 import { dummyDomainUsers } from "./selection";
+import BackButton from "../components/backButton";
 
 const DOMAIN_META = {
   WEB: { icon: <FiGlobe />, color: "text-blue-400" },
@@ -59,6 +60,7 @@ export default function DomainSelectionAnalytics() {
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-10 sm:mb-14 tracking-wide">
           Which Domain is Winning?
         </h1>
+        <BackButton label="Go Back" />
 
         {loading ? (
           <p className="text-center text-neutral-400">Have Patience dude</p>
@@ -154,7 +156,7 @@ export default function DomainSelectionAnalytics() {
           </>
         )}
 
-        
+
       </div>
     </div>
   );

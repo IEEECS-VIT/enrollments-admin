@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/admin";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
+import BackButton from "../components/backButton";
 export default function AdminResponses() {
   const [responses, setResponses] = useState([]);
   const [domain, setDomain] = useState("WEB");
@@ -113,7 +113,7 @@ export default function AdminResponses() {
       <h1 className="text-3xl sm:text-4xl font-bold text-center mb-10">
         Review Responses
       </h1>
-
+<BackButton label="Go Back" />
       <div className="bg-neutral-900 p-4 sm:p-6 rounded-2xl max-w-4xl mx-auto mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
         <select
           className="p-3 rounded-xl bg-black border border-neutral-700"

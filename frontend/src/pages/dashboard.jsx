@@ -25,7 +25,7 @@ export default function ResponsesPage() {
     <div className="min-h-screen w-full bg-black px-4 py-10 flex justify-center items-center relative">
       
       <div className="backdrop-blur-xl bg-white/5 p-6 sm:p-10 md:p-12 rounded-3xl w-full max-w-6xl border border-yellow-500/20 shadow-2xl">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-left mb-6">
           <img
             src={ieeeLogo}
             alt="IEEE Computer Society Logo"
@@ -33,7 +33,7 @@ export default function ResponsesPage() {
           />
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-10 text-center tracking-wide">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-10 text-center tracking-wide">
           Admin Dashboard
         </h1>
 
@@ -81,7 +81,7 @@ export default function ResponsesPage() {
               Create Slot
             </h2>
           </button>
-          <div className="absolute top-4 right-4 flex gap-2 sm:gap-3 z-10">
+          <div className="absolute top-10 right-4 flex gap-2 sm:gap-3 z-10">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 bg-neutral-800/80 hover:bg-neutral-700 px-3 py-2 rounded-xl text-white text-sm sm:text-base font-medium transition"

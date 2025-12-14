@@ -2,13 +2,23 @@ import { useState, useEffect } from "react";
 import api from "../api/admin";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import BackButton from "../components/backButton";
 
 export default function AdminManagement() {
   const [isHeadAdmin, setIsHeadAdmin] = useState(false);
   const [subAdmins, setSubAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const DOMAIN_OPTIONS = ["WEB", "APP", "AI/ML", "CC","EVENTS", "PNM", "UI/UX","VIDEO"];
+  const DOMAIN_OPTIONS = [
+    "WEB",
+    "APP",
+    "AI/ML",
+    "CC",
+    "EVENTS",
+    "PNM",
+    "UI/UX",
+    "VIDEO"
+  ];
 
   const [newAdmin, setNewAdmin] = useState({
     email: "",
@@ -32,7 +42,7 @@ export default function AdminManagement() {
       const res = await api.get("/admin/list-sub-admins");
       setIsHeadAdmin(true);
       setSubAdmins(res.data.sub_admins || []);
-    } catch (_) {
+    } catch {
       setIsHeadAdmin(false);
     }
   };
@@ -46,157 +56,148 @@ export default function AdminManagement() {
     }));
   };
 
+  const selectAllDomains = () => {
+    setNewAdmin((p) => ({
+      ...p,
+      domains:
+        p.domains.length === DOMAIN_OPTIONS.length ? [] : [...DOMAIN_OPTIONS]
+    }));
+  };
+
   const addSubAdmin = async () => {
     if (!newAdmin.email.trim()) return;
-    try {
-      await api.post("/admin/add-sub-admin", {
-        email: newAdmin.email.trim(),
-        allowed_domains: newAdmin.domains
-      });
-      setNewAdmin({ email: "", domains: [] });
-      validateHeadAdmin();
-    } catch (err) {
-      console.error("Add error:", err);
-    }
+    await api.post("/admin/add-sub-admin", {
+      email: newAdmin.email.trim(),
+      allowed_domains: newAdmin.domains
+    });
+    setNewAdmin({ email: "", domains: [] });
+    validateHeadAdmin();
   };
-const selectAllDomains = () => {
-  setNewAdmin((p) => ({
-    ...p,
-    domains:
-      p.domains.length === DOMAIN_OPTIONS.length
-        ? []                      
-        : [...DOMAIN_OPTIONS]     
-  }));
-};
 
   const removeSubAdmin = async (email) => {
-    try {
-      await api.delete("/admin/remove-sub-admin", { params: { email } });
-      validateHeadAdmin();
-    } catch (err) {
-      console.error("Remove error:", err);
-    }
+    await api.delete("/admin/remove-sub-admin", { params: { email } });
+    validateHeadAdmin();
   };
 
   if (loading)
     return (
-      <div className="h-screen bg-black flex items-center justify-center text-white text-xl tracking-wide">
+      <div className="h-screen bg-black flex items-center justify-center text-white text-lg sm:text-xl">
         hold up buddy
       </div>
     );
 
   if (!isHeadAdmin)
     return (
-      <div className="min-h-screen bg-black text-red-500 flex justify-center items-center text-3xl font-semibold tracking-wide">
+      <div className="min-h-screen bg-black text-red-500 flex justify-center items-center text-xl sm:text-3xl font-semibold">
         Not for you buddy
       </div>
     );
-return (
-  <div className="min-h-screen w-full bg-black text-white px-4 sm:px-6 py-12 flex flex-col items-center">
-    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-10 sm:mb-16 text-center bg-clip-text text-transparent drop-shadow-lg">
-      Sub Admin Control Panel
-    </h1>
 
-    <div className="w-full max-w-6xl space-y-16 sm:space-y-24">
-
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-10">Sub Admins</h2>
-
-        {subAdmins.length === 0 ? (
-          <p className="text-center text-neutral-400 text-base sm:text-lg">
-            No Sub Admins Added Yet
-          </p>
-        ) : (
-          <div className="space-y-4 sm:space-y-6 max-w-xl mx-auto">
-            {subAdmins.map((admin) => (
-              <div
-                key={admin.email}
-                className="bg-neutral-900/80 p-5 sm:p-7 rounded-3xl border border-neutral-800 shadow-xl hover:border-yellow-500/40 transition-all"
-              >
-                <p className="text-lg sm:text-xl font-semibold break-all">{admin.email}</p>
-                <p className="text-neutral-300 text-sm mt-2 tracking-wide">
+  return (
+    <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-10 sm:py-14">
+      <BackButton label="Go Back" />
 
 
-                  Domains:{" "}
-                  <span className="text-yellow-400">
-                    {admin.allowed_domains.join(", ")}
-                  </span>
-                </p>
+      <div className="max-w-6xl mx-auto space-y-16 sm:space-y-24">
+        <div>
+          <h2 className="text-xl sm:text-3xl font-bold text-center mb-6 sm:mb-10">
+            Sub Admins
+          </h2>
 
-                <button
-                  onClick={() => removeSubAdmin(admin.email)}
-                  className="mt-4 sm:mt-5 bg-red-600 hover:bg-red-500 px-4 sm:px-5 py-2 rounded-xl transition text-white font-medium w-full sm:w-auto"
+          {subAdmins.length === 0 ? (
+            <p className="text-center text-neutral-400 text-sm sm:text-lg">
+              No Sub Admins Added Yet
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
+              {subAdmins.map((admin) => (
+                <div
+                  key={admin.email}
+                  className="bg-neutral-900/80 p-5 sm:p-6 rounded-3xl border border-neutral-800 shadow-xl"
                 >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                  <p className="text-base sm:text-lg font-semibold break-all">
+                    {admin.email}
+                  </p>
 
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-10">
-          Add New Sub Admin
-        </h2>
+                  <p className="text-sm text-neutral-300 mt-2">
+                    Domains:{" "}
+                    <span className="text-yellow-400">
+                      {admin.allowed_domains.join(", ")}
+                    </span>
+                  </p>
 
-        <div className="bg-neutral-900/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl border border-neutral-800 shadow-xl max-w-xl mx-auto space-y-6 sm:space-y-8">
-          <input
-            type="email"
-            placeholder="Sub Admin Email"
-            value={newAdmin.email}
-            onChange={(e) =>
-              setNewAdmin({ ...newAdmin, email: e.target.value })
-            }
-            className="w-full p-3 sm:p-4 rounded-2xl bg-neutral-800 text-white placeholder-neutral-500 focus:ring-2 focus:ring-yellow-500 outline-none"
-          />
-
-          <div>
-            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">
-              Assign Domains
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-             <label className="flex items-center gap-3 text-base sm:text-lg cursor-pointer text-white">
-                <input
-                  type="checkbox"
-                  checked={newAdmin.domains.length === DOMAIN_OPTIONS.length}
-                  onChange={selectAllDomains}
-                  className="accent-yellow-500 scale-110 sm:scale-125"
-                />
-                Select All Domains
-              </label>
-
-              {DOMAIN_OPTIONS.map((domain) => (
-                <label
-                  key={domain}
-                  className="flex items-center gap-3 text-base sm:text-lg cursor-pointer"
-                >
-                  
-                  <input
-                    type="checkbox"
-                    checked={newAdmin.domains.includes(domain)}
-                    onChange={() => toggleDomain(domain)}
-                    className="accent-yellow-500 scale-110 sm:scale-125"
-                  />
-                  
-                  {domain}
-                </label>
+                  <button
+                    onClick={() => removeSubAdmin(admin.email)}
+                    className="mt-4 bg-red-600 hover:bg-red-500 px-4 py-2 rounded-xl text-white w-full sm:w-auto"
+                  >
+                    Remove
+                  </button>
+                </div>
               ))}
             </div>
-          </div>
+          )}
+        </div>
 
-          <button
-            onClick={addSubAdmin}
-            className="w-full mt-2 bg-yellow-500 hover:bg-yellow-400 transition text-black py-3 sm:py-4 rounded-2xl text-lg sm:text-xl font-semibold tracking-wide shadow-lg"
-          >
-            Add Sub Admin
-          </button>
+        <div>
+          <h2 className="text-xl sm:text-3xl font-bold text-center mb-6 sm:mb-10">
+            Add New Sub Admin
+          </h2>
+
+          <div className="bg-neutral-900/70 p-6 sm:p-10 rounded-3xl border border-neutral-800 shadow-xl max-w-xl mx-auto space-y-6">
+            <input
+              type="email"
+              placeholder="Sub Admin Email"
+              value={newAdmin.email}
+              onChange={(e) =>
+                setNewAdmin({ ...newAdmin, email: e.target.value })
+              }
+              className="w-full p-3 sm:p-4 rounded-2xl bg-neutral-800 text-white placeholder-neutral-500 focus:ring-2 focus:ring-yellow-500 outline-none"
+            />
+
+            <div>
+              <h3 className="text-base sm:text-xl font-semibold mb-4">
+                Assign Domains
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={
+                      newAdmin.domains.length === DOMAIN_OPTIONS.length
+                    }
+                    onChange={selectAllDomains}
+                    className="accent-yellow-500 scale-110"
+                  />
+                  Select All Domains
+                </label>
+
+                {DOMAIN_OPTIONS.map((domain) => (
+                  <label
+                    key={domain}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={newAdmin.domains.includes(domain)}
+                      onChange={() => toggleDomain(domain)}
+                      className="accent-yellow-500 scale-110"
+                    />
+                    {domain}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={addSubAdmin}
+              className="w-full bg-yellow-500 hover:bg-yellow-400 text-black py-3 rounded-2xl text-base sm:text-xl font-semibold shadow-lg"
+            >
+              Add Sub Admin
+            </button>
+          </div>
         </div>
       </div>
-
     </div>
-  </div>
-);
-
+  );
 }

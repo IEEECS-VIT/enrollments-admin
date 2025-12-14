@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/admin";
-
+import BackButton from "../components/backButton";
 const parseSlotId = (iid) => {
   const [domain, date, time, panel, round] = iid.split("_");
   return {
@@ -134,7 +134,7 @@ export default function Scheduling() {
       <h1 className="text-4xl font-bold mb-10 text-center">
         Interview Scheduling
       </h1>
-
+      <BackButton label="Go Back" />
       <div className="flex gap-4 mb-6 justify-center">
         <select
           className="p-3 bg-neutral-800 rounded-xl"

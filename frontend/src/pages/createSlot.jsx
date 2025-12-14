@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/admin";
+import BackButton from "../components/backButton";
 
 export default function CreateSlot() {
   const [password, setPassword] = useState("");
@@ -24,7 +25,7 @@ export default function CreateSlot() {
       setAuthenticated(true);
       setError("");
     } else {
-      setError("Incorrect password");
+      setError("Why are you always wrong?");
     }
   };
 
@@ -128,6 +129,7 @@ const createSlot = async () => {
     <div className="min-h-screen bg-black text-white p-10">
       <div className="max-w-xl mx-auto bg-neutral-900 p-8 rounded-2xl">
         <h1 className="text-3xl font-bold mb-6 text-center">Create Slot</h1>
+        <BackButton label="Go Back" />
 
         <select className="w-full p-3 mb-4 bg-neutral-800 rounded-xl" value={domain} onChange={(e) => setDomain(e.target.value)}>
           <option value="WEB">WEB</option>

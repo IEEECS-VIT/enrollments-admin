@@ -2,7 +2,7 @@ import api from "../api/admin";
 import { useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
+import BackButton from "../components/backButton";
 export default function Manage() {
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
@@ -150,6 +150,7 @@ export default function Manage() {
       <div className="bg-white/10 p-6 sm:p-10 rounded-2xl w-full max-w-5xl border border-yellow-500/20 shadow-xl">
 
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 mb-10">
+          <BackButton label="Go Back" />
           <img src="/logo.png" alt="IEEE CS Logo" className="h-12 sm:h-16" />
         </div>
 
@@ -157,13 +158,14 @@ export default function Manage() {
           <h2 className="text-2xl font-bold text-white mb-6">Add New Question</h2>
 
           <div className="grid grid-cols-1 gap-4">
-            <input
-              type="text"
-              placeholder="Enter question..."
-              className="p-3 w-full rounded-xl bg-black/20 border border-yellow-500/30 text-white"
-              value={newQuestion}
-              onChange={(e) => setNewQuestion(e.target.value)}
-            />
+
+<textarea
+  rows={6}
+  className="w-full p-4 sm:p-6 rounded-xl bg-black/20 border border-yellow-500/30 text-white text-base sm:text-lg resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500/40"
+  value={newQuestion}
+  onChange={(e) => setNewQuestion(e.target.value)}
+  placeholder="Type your question here..."
+/>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <select
@@ -215,26 +217,30 @@ export default function Manage() {
           {questionType === "MCQ" && (
             <div className="mt-6">
               {mcqOptions.map((opt, i) => (
-                <div key={i} className="flex items-center gap-3 mt-3">
-                  <input
-                    type="text"
-                    value={opt}
-                    onChange={(e) =>
-                      setMcqOptions((prev) =>
-                        prev.map((o, idx) => (idx === i ? e.target.value : o))
-                      )
-                    }
-                    className="flex-1 p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white"
-                    placeholder={`Option ${i + 1}`}
-                  />
+                <div
+              key={i}
+              className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3"
+            >
+              <input
+                type="text"
+                value={opt}
+                onChange={(e) =>
+                  setMcqOptions((prev) =>
+                    prev.map((o, idx) => (idx === i ? e.target.value : o))
+                  )
+                }
+                className="w-full sm:flex-1 p-3 rounded-xl bg-black/20 border border-yellow-500/30 text-white"
+                placeholder={`Option ${i + 1}`}
+              />
 
-                  <button
-                    onClick={() => deleteOption(i)}
-                    className="bg-red-600 hover:bg-red-500 px-3 py-2 rounded-xl text-white"
-                  >
-                    Delete
-                  </button>
-                </div>
+              <button
+                onClick={() => deleteOption(i)}
+                className="bg-red-600 hover:bg-red-500 active:bg-red-700 px-4 py-2 rounded-xl text-white text-sm sm:text-base w-full sm:w-auto transition"
+              >
+                Delete
+              </button>
+            </div>
+
               ))}
 
               <select
