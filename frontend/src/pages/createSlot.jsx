@@ -14,7 +14,7 @@ export default function CreateSlot() {
   const [panel, setPanel] = useState(1);
   const [capacity, setCapacity] = useState(1);
   const [loading, setLoading] = useState(false);
-
+  const [clashWarning, setClashWarning] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [createdSlot, setCreatedSlot] = useState(null);
   const [slots, setSlots] = useState([]);
@@ -39,34 +39,63 @@ export default function CreateSlot() {
     if (authenticated) fetchSlots(domain, round);
   }, [authenticated, domain, round]);
 
-  const createSlot = async () => {
-    if (!date || !startTime || !endTime) return;
+  const isTimeOverlap = (startA, endA, startB, endB) => {
+  return startA < endB && endA > startB;
+};
 
-    setLoading(true);
+const createSlot = async () => {
+  if (!date || !startTime || !endTime) return;
 
-    const payload = {
-      domain,
-      date,
+  const clash = slots.find((s) => {
+    const sameDate = s.iid.split("_")[1] === date;
+    const samePanel = Number(s.panel) === panel;
+
+    if (!sameDate || !samePanel) return false;
+
+    const [existingStart, existingEnd] = s.time_slot.split(" - ");
+
+    return isTimeOverlap(
       startTime,
       endTime,
-      panel,
-      interview_round: round,
-      max_capacity: capacity
-    };
+      existingStart,
+      existingEnd
+    );
+  });
 
-    await api.post("/admin/create-slot", payload);
+  if (clash) {
+    setClashWarning(
+      `Clashing slot exists: ${clash.time_slot} (Panel ${clash.panel})`
+    );
+    return;
+  }
 
-    setCreatedSlot(payload);
-    setShowSuccess(true);
-    fetchSlots(domain, round);
+  setClashWarning("");
+  setLoading(true);
 
-    setLoading(false);
-    setDate("");
-    setStartTime("");
-    setEndTime("");
-    setPanel(1);
-    setCapacity(1);
+  const payload = {
+    domain,
+    date,
+    startTime,
+    endTime,
+    panel,
+    interview_round: round,
+    max_capacity: capacity
   };
+
+  await api.post("/admin/create-slot", payload);
+
+  setCreatedSlot(payload);
+  setShowSuccess(true);
+  fetchSlots(domain, round);
+
+  setLoading(false);
+  setDate("");
+  setStartTime("");
+  setEndTime("");
+  setPanel(1);
+  setCapacity(1);
+};
+
 
   if (!authenticated) {
     return (
@@ -150,14 +179,27 @@ export default function CreateSlot() {
         />
 
         <label className="text-sm text-neutral-400">Max Capacity</label>
-        <input
+        {/*<input
           type="number"
           min={1}
           className="w-full p-3 mb-6 bg-neutral-800 rounded-xl"
           value={capacity}
           onChange={(e) => setCapacity(Number(e.target.value))}
-        />
+        />*/}
+        <input
+        type="number"
+        min={1}
+        value={1}
+        readOnly
+        className="w-full p-3 mb-6 bg-neutral-800 rounded-xl opacity-60 cursor-not-allowed"
+      />
 
+
+          {clashWarning && (
+  <div className="mb-4 p-3 rounded-xl bg-red-900/40 text-red-400 text-sm text-center">
+    {clashWarning}
+  </div>
+)}
 
         <button onClick={createSlot} disabled={loading} className="w-full bg-green-600 py-3 rounded-xl font-semibold">
           {loading ? "Have Patience" : "Create Slot"}
