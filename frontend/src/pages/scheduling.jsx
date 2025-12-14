@@ -85,7 +85,24 @@ export default function Scheduling() {
     fetchSlots();
   };
 
+  const unassignUser = async (email) => {
+    await api.post("/admin/unassign-slot", {
+      slot_id: activeSlot.iid,
+      user_email: email
+    });
+
+    const updated = {
+      ...activeSlot,
+      assigned_users: activeSlot.assigned_users.filter((u) => u !== email)
+    };
+
+    setActiveSlot(updated);
+    fetchSlots();
+  };
+
   const deleteSlot = async (slot) => {
+    if (slot.assigned_users.length > 0) return;
+
     await api.delete("/admin/delete-slot", {
       params: { slot_id: slot.iid }
     });
@@ -192,7 +209,7 @@ export default function Scheduling() {
                     <p className="text-lg font-semibold">
                       Panel {parsed.panel}
                     </p>
-                    <p className="text-neutral-300">{parsed.time}</p>
+                    <p className="text-neutral-300">{slot.time_slot}</p>
                     <p className="text-neutral-400">
                       {parsed.domain} • Round {parsed.round}
                     </p>
@@ -222,7 +239,8 @@ export default function Scheduling() {
 
                     <button
                       onClick={() => deleteSlot(slot)}
-                      className="mt-3 bg-red-600 py-2 w-full rounded-xl"
+                      disabled={slot.assigned_users.length > 0}
+                      className="mt-3 bg-red-600 py-2 w-full rounded-xl disabled:opacity-40"
                     >
                       Delete
                     </button>
@@ -304,9 +322,28 @@ export default function Scheduling() {
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
           <div className="bg-neutral-900 p-6 rounded-xl w-full max-w-lg">
             <h2 className="text-xl font-bold mb-4">Slot Details</h2>
-            {activeSlot.assigned_users.map((u) => (
-              <p key={u} className="text-green-400">{u}</p>
-            ))}
+
+            {activeSlot.assigned_users.length === 0 ? (
+              <p className="text-neutral-400 text-center">
+                No users assigned
+              </p>
+            ) : (
+              activeSlot.assigned_users.map((u) => (
+                <div
+                  key={u}
+                  className="flex justify-between items-center mb-2 bg-neutral-800 p-2 rounded-lg"
+                >
+                  <span className="text-green-400 break-all">{u}</span>
+                  <button
+                    onClick={() => unassignUser(u)}
+                    className="bg-red-600 px-3 py-1 rounded-lg text-sm"
+                  >
+                    Unassign
+                  </button>
+                </div>
+              ))
+            )}
+
             <button
               onClick={() => setShowDetails(false)}
               className="mt-6 bg-green-600 py-2 w-full rounded-xl"
