@@ -4,6 +4,13 @@ import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import BackButton from "../components/backButton";
 
+
+/*
+{user.track === "FRONTEND" && <p>Frontend Track</p>}
+{user.track === "BACKEND" && <p>Backend Track</p>}
+*/
+//for seeing separately 
+
 export default function AdminResponses() {
   const [responses, setResponses] = useState([]);
   const [domain, setDomain] = useState("WEB");

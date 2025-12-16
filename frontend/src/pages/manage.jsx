@@ -15,7 +15,6 @@ export default function Manage() {
   const [correctIndex, setCorrectIndex] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [deleteText, setDeleteText] = useState("");
   const [deleteType, setDeleteType] = useState("");
   const [userReady, setUserReady] = useState(false);
 const [copiedId, setCopiedId] = useState(null);
@@ -81,6 +80,18 @@ const copyToClipboard = async (text) => {
     setMcqOptions((prev) => prev.filter((_, i) => i !== index));
   };
 
+  useEffect(() => {
+  if (!userReady || !auth.currentUser) return;
+
+  fetchQuestions();
+
+  const interval = setInterval(() => {
+    fetchQuestions();
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, [category, userReady]);
+
   const handleAddQuestion = async () => {
     if (!newQuestion.trim()) return;
 
@@ -114,31 +125,23 @@ const copyToClipboard = async (text) => {
 
   const addOptionField = () => setMcqOptions([...mcqOptions, ""]);
 
-  const handleDeleteQuestion = async () => {
-    if (!deleteText.trim() || !deleteType) {
-      alert("Enter question text and type");
-      return;
-    }
+  const handleDeleteQuestion = async (id, type) => {
+  try {
+    await api.delete("/admin/delete-question", {
+      params: {
+        domain: category,
+        round: 1,
+        question_type: type === "MCQ" ? "mcq" : "desc",
+        question_id: id
+      }
+    });
 
-    try {
-      await api.delete("/admin/delete-question", {
-        params: {
-          domain: category,
-          round: 1,
-          question_type: deleteType,
-          question_text: deleteText,
-        },
-      });
+    fetchQuestions();
+  } catch (err) {
+    alert("Error deleting question");
+  }
+};
 
-      alert("Question deleted successfully");
-      setDeleteText("");
-      setDeleteType("");
-
-      fetchQuestions();
-    } catch (err) {
-      alert("Error deleting question");
-    }
-  };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -291,34 +294,6 @@ const copyToClipboard = async (text) => {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="bg-neutral-900 p-4 sm:p-6 rounded-2xl max-w-4xl mx-auto mb-10 space-y-4">
-          <h2 className="text-xl font-semibold text-red-400">Delete Question</h2>
-
-          <input
-            type="text"
-            placeholder="Enter EXACT question text"
-            className="p-3 w-full rounded-xl bg-black border border-red-500/40 text-white"
-            value={deleteText}
-            onChange={(e) => setDeleteText(e.target.value)}
-          />
-
-          <select
-            className="p-3 w-full rounded-xl bg-black border border-red-500/40 text-white"
-            value={deleteType}
-            onChange={(e) => setDeleteType(e.target.value)}
-          >
-            <option value="">Select question type</option>
-            <option value="mcq">MCQ</option>
-            <option value="desc">Short Answer</option>
-          </select>
-
-          <button
-            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl w-full font-semibold"
-            onClick={handleDeleteQuestion}
-          >
-            Delete Question
-          </button>
-        </div>
 
         <div className="bg-white/10 border border-white/20 rounded-2xl p-6 shadow-lg">
           <h2 className="text-2xl text-white mb-4">All Questions</h2>
@@ -329,52 +304,62 @@ const copyToClipboard = async (text) => {
           ) : (
             <ul className="space-y-4">
               {filteredQuestions.map((q) => (
-                <li key={q.id} className="p-5 bg-black/20 border border-yellow-500/20 rounded-2xl">
-                  <p className="text-white font-semibold">{q.text}</p>
-                  
-              <div className="flex items-center gap-2 mt-1 relative">
-                <span className="text-xs text-neutral-500 break-all">
-                  ID: {q.id}
-                </span>
+               <li
+  key={q.id}
+  className="relative p-5 bg-black/20 border border-yellow-500/20 rounded-2xl"
+>
+  <button
+    onClick={() => handleDeleteQuestion(q.id, q.type)}
+    className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
+  >
+    Delete
+  </button>
 
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(q.id);
-                    setCopiedId(q.id);
-                    setTimeout(() => setCopiedId(null), 1200);
-                  }}
-                  className="p-1 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 transition"
-                  aria-label="Copy UUID"
-                >
-                  <FiCopy size={14} />
-                </button>
+  <p className="text-white font-semibold">{q.text}</p>
 
-                {copiedId === q.id && (
-                  <span className="absolute -top-6 right-0 bg-black text-green-400 text-[10px] px-2 py-0.5 rounded-md border border-green-500/30 shadow-lg">
-                    Copied
-                  </span>
-                )}
-              </div>
+  <div className="flex items-center gap-2 mt-1 relative">
+    <span className="text-xs text-neutral-500 break-all">
+      ID: {q.id}
+    </span>
 
+    <button
+      onClick={() => {
+        navigator.clipboard.writeText(q.id);
+        setCopiedId(q.id);
+        setTimeout(() => setCopiedId(null), 1200);
+      }}
+      className="p-1 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 transition"
+      aria-label="Copy UUID"
+    >
+      <FiCopy size={14} />
+    </button>
 
+    {copiedId === q.id && (
+      <span className="absolute -top-6 right-0 bg-black text-green-400 text-[10px] px-2 py-0.5 rounded-md border border-green-500/30 shadow-lg">
+        Copied
+      </span>
+    )}
+  </div>
 
-                  {q.image && <img src={q.image} className="mt-3 w-32 rounded-lg" />}
+  {q.image && <img src={q.image} className="mt-3 w-32 rounded-lg" />}
 
-                  {q.type === "MCQ" && (
-                    <>
-                      <ul className="mt-2 ml-4 list-disc text-neutral-300 text-sm">
-                        {q.options.map((opt, idx) => (
-                          <li key={idx}>{opt}</li>
-                        ))}
-                      </ul>
+  {q.type === "MCQ" && (
+    <>
+      <ul className="mt-2 ml-4 list-disc text-neutral-300 text-sm">
+        {q.options.map((opt, idx) => (
+          <li key={idx}>{opt}</li>
+        ))}
+      </ul>
 
-                      <p className="text-green-400 text-sm mt-2">
-                        Correct: {q.options[q.correctIndex]}
-                      </p>
-                    </>
-                  )}
-                </li>
+      <p className="text-green-400 text-sm mt-2">
+        Correct: {q.options[q.correctIndex]}
+      </p>
+    </>
+  )}
+</li>
+
               ))}
+
 
 
             </ul>
