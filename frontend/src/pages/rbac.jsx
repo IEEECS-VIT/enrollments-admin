@@ -89,8 +89,10 @@ export default function AdminManagement() {
   if (!isHeadAdmin)
     return (
       <div className="min-h-screen bg-black text-red-500 flex justify-center items-center text-xl sm:text-3xl font-semibold">
-        Not for you buddy
+        Not for you buddy XD
+        <BackButton label="Go Back" /> 
       </div>
+      
     );
 
   return (

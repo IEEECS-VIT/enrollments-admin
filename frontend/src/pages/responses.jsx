@@ -14,6 +14,8 @@ import BackButton from "../components/backButton";
 export default function AdminResponses() {
   const [responses, setResponses] = useState([]);
   const [domain, setDomain] = useState("WEB");
+  const [accessDenied, setAccessDenied] = useState(false);
+
   const [round, setRound] = useState(1);
   const [status, setStatus] = useState("unmarked");
   const [loading, setLoading] = useState(true);
@@ -53,8 +55,10 @@ export default function AdminResponses() {
   };
 
   const fetchResponses = async () => {
-    setLoading(true);
+  setLoading(true);
+  setAccessDenied(false);
 
+  try {
     const res = await api.get("/admin/fetch", {
       params: { domain, round, status }
     });
@@ -85,8 +89,16 @@ export default function AdminResponses() {
     });
 
     setResponses(computed);
+  } catch (err) {
+    if (err?.response?.status === 403) {
+      setAccessDenied(true);
+      setResponses([]);
+    }
+  } finally {
     setLoading(false);
-  };
+  }
+};
+
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => u && fetchResponses());
@@ -109,7 +121,18 @@ export default function AdminResponses() {
 
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-10">
-      
+      {accessDenied && (
+  <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-center px-6">
+    <h1 className="text-3xl sm:text-5xl font-bold text-red-500 mb-4">
+      Get Out
+    </h1>
+    <p className="text-neutral-300 max-w-md mb-6">
+      You are not worth it.
+    </p>
+    <BackButton label="Go Back" />
+  </div>
+)}
+
 <div className="relative mb-10 flex items-center">
   <div className="flex-shrink-0">
     <BackButton label="Go Back" />
