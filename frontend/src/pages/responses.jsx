@@ -133,7 +133,7 @@ export default function AdminResponses() {
           <option value="EVENTS">EVENTS</option>
           <option value="PNM">PNM</option>
           <option value="UI/UX">UI/UX</option>
-          <option value="VIDEO EDITING">Video Editing</option>
+          <option value="VIDEO">Video Editing</option>
         </select>
 
         <select className="p-3 rounded-xl bg-black border border-neutral-700" value={round} onChange={(e) => setRound(Number(e.target.value))}>

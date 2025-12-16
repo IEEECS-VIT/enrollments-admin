@@ -238,14 +238,14 @@ const isAddDisabled =
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="WEB" className="bg-black">WEB</option>
-                <option value="APP" className="bg-black">APP</option>
-                <option value="AI/ML" className="bg-black">AI/ML</option>
-                <option value="CC" className="bg-black">CC</option>
-                <option value="EVENTS" className="bg-black">EVENTS</option>
-                <option value="PNM" className="bg-black">PNM</option>
-                <option value="UI/UX" className="bg-black">UI/UX</option>
-                <option value="VIDEO" className="bg-black">Video Editing</option>
+          <option value="WEB">WEB</option>
+          <option value="APP">APP</option>
+          <option value="AI/ML">AI/ML</option>
+          <option value="CC">CC</option>
+          <option value="EVENTS">EVENTS</option>
+          <option value="PNM">PNM</option>
+          <option value="UI/UX">UI/UX</option>
+          <option value="VIDEO">Video Editing</option>
               </select>
 
               <select
