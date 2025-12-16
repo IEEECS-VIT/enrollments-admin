@@ -335,7 +335,7 @@ const copyToClipboard = async (text) => {
     </button>
 
     {copiedId === q.id && (
-      <span className="absolute -top-6 right-0 bg-black text-green-400 text-[10px] px-2 py-0.5 rounded-md border border-green-500/30 shadow-lg">
+      <span className="absolute -top-7 right-16 bg-black text-green-400 text-[10px] px-2 py-0.5 rounded-md border border-green-500/30 shadow-lg">
         Copied
       </span>
     )}
