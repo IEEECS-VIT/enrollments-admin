@@ -17,6 +17,9 @@ export default function Manage() {
   const [imagePreview, setImagePreview] = useState(null);
   const [deleteType, setDeleteType] = useState("");
   const [userReady, setUserReady] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [pendingDelete, setPendingDelete] = useState(null);
+
 const [copiedId, setCopiedId] = useState(null);
 
 const copyToClipboard = async (text) => {
@@ -36,6 +39,14 @@ const copyToClipboard = async (text) => {
   useEffect(() => {
     if (userReady && auth.currentUser) fetchQuestions();
   }, [category]);
+const isAddDisabled =
+  !newQuestion.trim() ||
+  (questionType === "MCQ" &&
+    (
+      correctIndex === "" ||
+      mcqOptions.filter(o => o.trim() !== "").length !== 4
+    ));
+
 
   const fetchQuestions = async () => {
     try {
@@ -160,6 +171,47 @@ const copyToClipboard = async (text) => {
 
   return (
     <div className="min-h-screen w-full bg-black p-4 sm:p-8 flex justify-center">
+
+      
+    {showDeleteModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div className="bg-neutral-900 border border-red-500/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+          <h3 className="text-lg font-semibold text-white mb-2">
+            Delete Question?
+          </h3>
+
+          <p className="text-sm text-neutral-400 mb-6">
+            This action cannot be undone.
+          </p>
+
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => {
+                setShowDeleteModal(false);
+                setPendingDelete(null);
+              }}
+              className="px-4 py-2 rounded-lg bg-neutral-700 hover:bg-neutral-600 text-sm"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={() => {
+                handleDeleteQuestion(
+                  pendingDelete.id,
+                  pendingDelete.type
+                );
+                setShowDeleteModal(false);
+                setPendingDelete(null);
+              }}
+              className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-sm font-semibold"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
       <div className="bg-white/10 p-6 sm:p-10 rounded-2xl w-full max-w-5xl border border-yellow-500/20 shadow-xl">
 
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 mb-10">
@@ -261,7 +313,7 @@ const copyToClipboard = async (text) => {
                 value={correctIndex}
                 onChange={(e) => setCorrectIndex(Number(e.target.value))}
               >
-                <option value="">Select an option</option>
+                <option value="">Enter Correct Option</option>
                 {mcqOptions.map((opt, idx) => (
                   <option key={idx} value={idx} className="bg-black text-white">
                     {opt.trim() || `Option ${idx + 1}`}
@@ -269,21 +321,25 @@ const copyToClipboard = async (text) => {
                 ))}
               </select>
 
-              <button
-                onClick={addOptionField}
-                className="mt-4 ml-4 bg-blue-500 hover:bg-blue-400 text-white px-5 py-2 rounded-xl transition"
-              >
-                + Add Option
-              </button>
+            <button
+              onClick={addOptionField}
+              disabled={mcqOptions.filter(o => o.trim() !== "").length >= 4}
+              className="mt-4 ml-4 bg-blue-500 disabled:bg-blue-500/40 disabled:cursor-not-allowed hover:bg-blue-400 text-white px-5 py-2 rounded-xl transition"
+            >
+              + Add Option
+            </button>
+
             </div>
           )}
 
-          <button
-            onClick={handleAddQuestion}
-            className="mt-8 w-full bg-green-500 hover:bg-green-400 transition text-white py-3 rounded-xl text-lg font-bold"
-          >
-            Add Question
-          </button>
+        <button
+          onClick={handleAddQuestion}
+          disabled={isAddDisabled}
+          className="mt-8 w-full bg-green-500 disabled:bg-green-500/40 disabled:cursor-not-allowed hover:bg-green-400 transition text-white py-3 rounded-xl text-lg font-bold"
+        >
+          Add Question
+        </button>
+
         </div>
 
         <input
@@ -308,12 +364,16 @@ const copyToClipboard = async (text) => {
   key={q.id}
   className="relative p-5 bg-black/20 border border-yellow-500/20 rounded-2xl"
 >
-  <button
-    onClick={() => handleDeleteQuestion(q.id, q.type)}
-    className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
-  >
-    Delete
-  </button>
+<button
+  onClick={() => {
+    setPendingDelete({ id: q.id, type: q.type });
+    setShowDeleteModal(true);
+  }}
+  className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
+>
+  Delete
+</button>
+
 
   <p className="text-white font-semibold">{q.text}</p>
 
