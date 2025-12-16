@@ -100,9 +100,12 @@ export default function AdminManagement() {
 
       <div className="max-w-6xl mx-auto space-y-16 sm:space-y-24">
         <div>
+          
           <h2 className="text-xl sm:text-3xl font-bold text-center mb-6 sm:mb-10">
             Sub Admins
+            
           </h2>
+          
 
           {subAdmins.length === 0 ? (
             <p className="text-center text-neutral-400 text-sm sm:text-lg">

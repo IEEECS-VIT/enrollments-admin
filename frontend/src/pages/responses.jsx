@@ -102,13 +102,22 @@ export default function AdminResponses() {
 
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-10">
-      <BackButton label="Go Back" />
+      
+<div className="relative mb-10 flex items-center">
+  <div className="flex-shrink-0">
+    <BackButton label="Go Back" />
+  </div>
 
-      <h1 className="text-2xl sm:text-4xl font-bold text-center mb-8">
-        Review Responses
-      </h1>
+  <h1 className="absolute left-1/2 -translate-x-1/2 text-2xl sm:text-4xl font-bold text-center">
+    Responses
+  </h1>
+
+</div>
+
+
 
       <div className="bg-neutral-900 p-4 sm:p-6 rounded-2xl max-w-5xl mx-auto mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        
         <select className="p-3 rounded-xl bg-black border border-neutral-700" value={domain} onChange={(e) => setDomain(e.target.value)}>
           <option value="WEB">WEB</option>
           <option value="APP">APP</option>

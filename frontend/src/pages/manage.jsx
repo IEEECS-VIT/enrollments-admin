@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import BackButton from "../components/backButton";
+import { FiCopy } from "react-icons/fi";
+
 export default function Manage() {
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
@@ -16,6 +18,13 @@ export default function Manage() {
   const [deleteText, setDeleteText] = useState("");
   const [deleteType, setDeleteType] = useState("");
   const [userReady, setUserReady] = useState(false);
+const [copiedId, setCopiedId] = useState(null);
+
+const copyToClipboard = async (text) => {
+  await navigator.clipboard.writeText(text);
+  setCopiedId(text);
+  setTimeout(() => setCopiedId(null), 1500);
+};
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -44,24 +53,25 @@ export default function Manage() {
       const desc = res.data.desc_questions || [];
 
       const formatted = [
-        ...mcq.map((q) => ({
-          id: Math.random(),
-          text: q.question,
-          type: "MCQ",
-          category,
-          options: q.options || [],
-          correctIndex: q.correctIndex ?? null,
-          image: q.image_url || null,
-        })),
-        ...desc.map((q) => ({
-          id: Math.random(),
-          text: q.question,
-          type: "Short Answer",
-          category,
-          options: [],
-          image: q.image_url || null,
-        })),
-      ];
+  ...mcq.map((q) => ({
+    id: String(q.id),
+    text: q.question,
+    type: "MCQ",
+    category,
+    options: q.options || [],
+    correctIndex: q.correctIndex ?? null,
+    image: q.image_url || null,
+  })),
+  ...desc.map((q) => ({
+    id: String(q.id),
+    text: q.question,
+    type: "Short Answer",
+    category,
+    options: [],
+    image: q.image_url || null,
+  })),
+];
+
 
       setQuestions(formatted);
     } catch (err) {}
@@ -313,6 +323,7 @@ export default function Manage() {
         <div className="bg-white/10 border border-white/20 rounded-2xl p-6 shadow-lg">
           <h2 className="text-2xl text-white mb-4">All Questions</h2>
 
+          
           {filteredQuestions.length === 0 ? (
             <p className="text-neutral-400 text-center py-4">No questions found.</p>
           ) : (
@@ -320,8 +331,32 @@ export default function Manage() {
               {filteredQuestions.map((q) => (
                 <li key={q.id} className="p-5 bg-black/20 border border-yellow-500/20 rounded-2xl">
                   <p className="text-white font-semibold">{q.text}</p>
-                  <p className="text-neutral-400 text-sm">Category: {q.category}</p>
-                  <p className="text-neutral-500 text-sm">Type: {q.type}</p>
+                  
+              <div className="flex items-center gap-2 mt-1 relative">
+                <span className="text-xs text-neutral-500 break-all">
+                  ID: {q.id}
+                </span>
+
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(q.id);
+                    setCopiedId(q.id);
+                    setTimeout(() => setCopiedId(null), 1200);
+                  }}
+                  className="p-1 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 transition"
+                  aria-label="Copy UUID"
+                >
+                  <FiCopy size={14} />
+                </button>
+
+                {copiedId === q.id && (
+                  <span className="absolute -top-6 right-0 bg-black text-green-400 text-[10px] px-2 py-0.5 rounded-md border border-green-500/30 shadow-lg">
+                    Copied
+                  </span>
+                )}
+              </div>
+
+
 
                   {q.image && <img src={q.image} className="mt-3 w-32 rounded-lg" />}
 
@@ -340,6 +375,8 @@ export default function Manage() {
                   )}
                 </li>
               ))}
+
+
             </ul>
           )}
         </div>
