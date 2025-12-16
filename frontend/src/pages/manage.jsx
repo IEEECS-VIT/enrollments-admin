@@ -181,7 +181,7 @@ const isAddDisabled =
           </h3>
 
           <p className="text-sm text-neutral-400 mb-6">
-            This action cannot be undone.
+            Are you sure buddy?
           </p>
 
           <div className="flex justify-end gap-3">
