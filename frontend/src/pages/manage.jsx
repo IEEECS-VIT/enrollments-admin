@@ -378,17 +378,14 @@ const isAddDisabled =
   <p className="text-white font-semibold">{q.text}</p>
 
   <div className="flex items-center gap-2 mt-3 relative">
-    <span className="text-xs text-neutral-500 break-all">
-      ID: {q.id}
-    </span>
-
+   
     <button
       onClick={() => {
         navigator.clipboard.writeText(q.id);
         setCopiedId(q.id);
         setTimeout(() => setCopiedId(null), 1200);
       }}
-      className="p-1 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 transition"
+      className="p-1 rounded-md mb-2 text-neutral-400 hover:text-white hover:bg-neutral-800 transition"
       aria-label="Copy UUID"
     >
       <FiCopy size={14} />
@@ -413,7 +410,7 @@ const isAddDisabled =
         ))}
       </ul>
 
-      <p className="text-green-400 text-sm mt-2 mb-3">
+      <p className="text-green-400 text-sm mt-2 mb-4">
         Correct: {q.options[q.correctIndex]}
         
       </p>
@@ -422,7 +419,7 @@ const isAddDisabled =
     setPendingDelete({ id: q.id, type: q.type });
     setShowDeleteModal(true);
   }}
-  className="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 rounded-md text-[10px] font-medium transition-colors"
+  className="absolute bottom-2 right-2  bg-red-600 hover:bg-red-700 px-2 py-1 rounded-md text-[10px] font-medium transition-colors"
 >
   Delete
 </button>
