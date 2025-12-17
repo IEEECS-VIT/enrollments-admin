@@ -48,10 +48,17 @@ const createSlot = async () => {
   if (!date || !startTime || !endTime) return;
 
   const clash = slots.find((s) => {
-    const sameDate = s.iid.split("_")[1] === date;
-    const samePanel = Number(s.panel) === panel;
+    const slotDate = s.iid.split("_")[1];
 
-    if (!sameDate || !samePanel) return false;
+    const sameDate = slotDate === date;
+    const samePanel = Number(s.panel) === panel;
+    const sameRound = Number(s.interview_round) === Number(round);
+    const sameDomain = s.domain === domain;
+
+    // All conditions must match
+    if (!sameDate || !samePanel || !sameRound || !sameDomain) {
+      return false;
+    }
 
     const [existingStart, existingEnd] = s.time_slot.split(" - ");
 
@@ -96,6 +103,7 @@ const createSlot = async () => {
   setPanel(1);
   setCapacity(1);
 };
+
 
 
   if (!authenticated) {
@@ -220,6 +228,7 @@ const createSlot = async () => {
           <p><b>Time:</b> {s.time_slot}</p>
           <p><b>Panel:</b> {s.panel}</p>
           <p><b>Round:</b> {round}</p>
+          <p><b>Domain:</b> {domain}</p>
         </div>
       ))}
 
