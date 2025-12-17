@@ -58,7 +58,7 @@ export default function DomainSelectionAnalytics() {
     <div className="min-h-screen bg-black px-4 py-8 sm:py-10 text-white">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl mt-10 sm:text-4xl md:text-5xl font-bold text-center mb-10 sm:mb-14 tracking-wide">
-          Which Domain is Winning?
+          Which Domain is Winning? (This is dummy data Rn)
         </h1>
         <BackButton label="Go Back" />
 
