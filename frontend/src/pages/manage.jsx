@@ -364,20 +364,12 @@ const isAddDisabled =
   key={q.id}
   className="relative p-5 bg-black/20 border border-yellow-500/20 rounded-2xl"
 >
-<button
-  onClick={() => {
-    setPendingDelete({ id: q.id, type: q.type });
-    setShowDeleteModal(true);
-  }}
-  className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-semibold"
->
-  Delete
-</button>
+
 
 
   <p className="text-white font-semibold">{q.text}</p>
 
-  <div className="flex items-center gap-2 mt-1 relative">
+  <div className="flex items-center gap-2 mt-3 relative">
     <span className="text-xs text-neutral-500 break-all">
       ID: {q.id}
     </span>
@@ -393,6 +385,7 @@ const isAddDisabled =
     >
       <FiCopy size={14} />
     </button>
+    
 
     {copiedId === q.id && (
       <span className="absolute -top-7 right-16 bg-black text-green-400 text-[10px] px-2 py-0.5 rounded-md border border-green-500/30 shadow-lg">
@@ -402,6 +395,7 @@ const isAddDisabled =
   </div>
 
   {q.image && <img src={q.image} className="mt-3 w-32 rounded-lg" />}
+  
 
   {q.type === "MCQ" && (
     <>
@@ -411,9 +405,21 @@ const isAddDisabled =
         ))}
       </ul>
 
-      <p className="text-green-400 text-sm mt-2">
+      <p className="text-green-400 text-sm mt-2 mb-3">
         Correct: {q.options[q.correctIndex]}
+        
       </p>
+<button
+  onClick={() => {
+    setPendingDelete({ id: q.id, type: q.type });
+    setShowDeleteModal(true);
+  }}
+  className="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 rounded-md text-[10px] font-medium transition-colors"
+>
+  Delete
+</button>
+
+
     </>
   )}
 </li>

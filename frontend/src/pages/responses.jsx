@@ -121,17 +121,9 @@ export default function AdminResponses() {
 
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-10">
-      {accessDenied && (
-  <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-center px-6">
-    <h1 className="text-3xl sm:text-5xl font-bold text-red-500 mb-4">
-      Get Out
-    </h1>
-    <p className="text-neutral-300 max-w-md mb-6">
-      You are not worth it.
-    </p>
-    <BackButton label="Go Back" />
-  </div>
-)}
+
+
+
 
 <div className="relative mb-10 flex items-center">
   <div className="flex-shrink-0">
@@ -171,9 +163,27 @@ export default function AdminResponses() {
         </select>
       </div>
 
-      {loading ? (
-        <p className="text-center text-neutral-400">Have Patience</p>
-      ) : (
+      {accessDenied && (
+  <div className="max-w-5xl mx-auto mb-10 px-4">
+    <div className="bg-black border border-red-500/30 rounded-3xl p-6 sm:p-10 text-center shadow-2xl">
+      <h1 className="text-4xl sm:text-6xl font-extrabold text-red-500 tracking-tight mb-4">
+        Get Out Man/Woman
+      </h1>
+
+      <div className="w-16 h-1 bg-red-500 mx-auto mb-6 rounded-full" />
+
+      <p className="text-neutral-300 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+        You don’t have permission to view responses for this domain.
+        Please switch to another domain from the dropdown.
+      </p>
+    </div>
+  </div>
+)}
+
+{loading ? (
+  <p className="text-center text-neutral-400">Have Patience</p>
+) : accessDenied ? null : (
+
 
         <div className="space-y-4 max-w-5xl mx-auto">
           {responses.map((user, idx) => (
