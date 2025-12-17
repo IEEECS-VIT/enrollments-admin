@@ -366,7 +366,15 @@ const isAddDisabled =
 >
 
 
-
+<button
+  onClick={() => {
+    setPendingDelete({ id: q.id, type: q.type });
+    setShowDeleteModal(true);
+  }}
+  className="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 rounded-md text-[10px] font-medium transition-colors"
+>
+  Delete
+</button>
   <p className="text-white font-semibold">{q.text}</p>
 
   <div className="flex items-center gap-2 mt-3 relative">
