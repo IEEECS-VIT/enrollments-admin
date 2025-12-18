@@ -19,6 +19,8 @@ export default function AdminResponses() {
   const [round, setRound] = useState(1);
   const [status, setStatus] = useState("unmarked");
   const [loading, setLoading] = useState(true);
+  const normalize = (v) => String(v ?? "").trim();
+
 
   const fetchQuestions = async () => {
     const res = await api.get("/admin/questions", {
@@ -209,7 +211,10 @@ export default function AdminResponses() {
                 {user.mcqQuestions.map((q, i) => {
                   const qid = String(q.id || q.uuid);
                   const correctAnswer = q.options?.[Number(q.correctIndex)];
+                  
                   const userAnswer = user.answersMap?.[qid];
+                    const isCorrect =normalize(userAnswer) === normalize(correctAnswer);
+                  
                   if (userAnswer == null || userAnswer === "N/A") return null;
 
                   return (
@@ -217,27 +222,37 @@ export default function AdminResponses() {
                       <p className="text-neutral-400">Q{i + 1}</p>
                       <p className="font-semibold mt-1">{q.question}</p>
 
-                      {q.options.map((opt, optIdx) => (
-                        <p key={optIdx} className={`px-3 py-2 rounded-lg mt-2 ${
-                          opt === correctAnswer ? "bg-green-800" :
-                          opt === userAnswer ? "bg-red-800" :
+   {q.options.map((opt, optIdx) => {
+  const isUser = normalize(opt) === normalize(userAnswer);
+  const isRight = normalize(opt) === normalize(correctAnswer); //had to normalize 
 
-                          "bg-neutral-800"
-                        }`}>
-                          {optIdx + 1}. {opt}
-                        </p>
-                      ))}
+  return (
+    <p
+      key={optIdx}
+      className={`px-3 py-2 rounded-lg mt-2 ${
+        isRight
+          ? "bg-green-500"
+          : isUser
+          ? "bg-red-500"
+          : "bg-neutral-800"
+      }`}
+    >
+      {optIdx + 1}. {opt}
+    </p>
+  );
+})}
 
+
+                        
                       <p className="mt-3 text-green-400">
                         Correct : {correctAnswer ?? "N/A"}
                       </p>
-                      <p className={`mt-1 ${
-                        userAnswer === correctAnswer ? "text-green-400" : "text-red-400"
-
-                      }`}>
-                        User : {userAnswer ?? "N/A"}
+                      <p className={`mt-1 ${isCorrect ? "text-green-400" : "text-red-400"}`}>
+                      User : {userAnswer ?? "N/A"}
+                    
                       </p>
                     </div>
+                    
                   );
                 })}
 
