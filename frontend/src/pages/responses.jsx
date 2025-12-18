@@ -205,10 +205,12 @@ export default function AdminResponses() {
               </summary>
 
               <div className="px-4 sm:px-6 pb-6 space-y-6">
+                
                 {user.mcqQuestions.map((q, i) => {
                   const qid = String(q.id || q.uuid);
                   const correctAnswer = q.options?.[Number(q.correctIndex)];
                   const userAnswer = user.answersMap?.[qid];
+                  if (userAnswer == null || userAnswer === "N/A") return null;
 
                   return (
                     <div key={qid} className="bg-black/40 p-4 rounded-xl">
