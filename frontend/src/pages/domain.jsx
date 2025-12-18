@@ -91,7 +91,6 @@ export default function DomainSelectionAnalytics() {
       >
         {idx === 0 && (
           <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-black text-sm font-extrabold px-4 py-1 rounded-full shadow-lg">
-            Winner Winner 
             Chicken Dinner?
           </span>
         )}
