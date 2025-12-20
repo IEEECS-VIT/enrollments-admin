@@ -21,6 +21,16 @@ export default function AdminResponses() {
   const [loading, setLoading] = useState(true);
   const normalize = (v) => String(v ?? "").trim();
 
+  const countAppearedMcqs = (user, mcqQuestions) => {
+  const answers = round === 1 ? user.round1 || [] : user.round2 || [];
+  const mcqIds = new Set(
+    mcqQuestions.map(q => String(q.id || q.uuid))
+  );
+
+  // count only answers whose questionId belongs to MCQs
+  return answers.filter(a => mcqIds.has(String(a.questionId))).length;
+};
+
 
   const fetchQuestions = async () => {
     const res = await api.get("/admin/questions", {
@@ -80,13 +90,15 @@ export default function AdminResponses() {
     const { mcq, desc } = await fetchQuestions();
 
     const computed = raw.map((user) => {
+      const appearedMcqs = countAppearedMcqs(user, mcq);
       const answersMap = extractAnswers(user);
       return {
         ...user,
         answersMap,
         score: calculateScore(answersMap, mcq),
         mcqQuestions: mcq,
-        descQuestions: desc
+        descQuestions: desc,
+        appearedMcqs
       };
     });
 
@@ -150,7 +162,7 @@ export default function AdminResponses() {
           <option value="EVENTS">EVENTS</option>
           <option value="PNM">PNM</option>
           <option value="UI/UX">UI/UX</option>
-          <option value="VIDEO">Video Editing</option>
+          <option value="VIDEO EDITING">Video Editing</option>
         </select>
 
         <select className="p-3 rounded-xl bg-black border border-neutral-700" value={round} onChange={(e) => setRound(Number(e.target.value))}>
@@ -193,7 +205,7 @@ export default function AdminResponses() {
               <summary className="cursor-pointer flex flex-col sm:flex-row justify-between gap-4 p-4 sm:p-6">
                 <div>
                   <p className="break-all font-semibold text-lg">{user.email}</p>
-                  <p className="text-yellow-400 text-sm">Score: {user.score}</p>
+                  <p className="text-yellow-400 text-sm">Score: {user.score} / {user.appearedMcqs}</p>
                 </div>
                 <div className="flex gap-3" onClick={(e) => e.stopPropagation()}>
                   <button onClick={() => markUser(user.email, "qualified")} className="bg-green-600 px-4 py-2 rounded-xl text-sm font-semibold">
