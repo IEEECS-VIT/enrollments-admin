@@ -15,6 +15,9 @@ export default function AdminResponses() {
   const [responses, setResponses] = useState([]);
   const [domain, setDomain] = useState("WEB");
   const [accessDenied, setAccessDenied] = useState(false);
+const QUESTION_DOMAIN_MAP = {
+  "VIDEO EDITING": "VIDEO"
+};
 
   const [round, setRound] = useState(1);
   const [status, setStatus] = useState("unmarked");
@@ -32,10 +35,13 @@ export default function AdminResponses() {
 };
 
 
-  const fetchQuestions = async () => {
-    const res = await api.get("/admin/questions", {
-      params: { domain, round }
-    });
+const fetchQuestions = async () => {
+  const questionDomain = QUESTION_DOMAIN_MAP[domain] || domain;
+
+  const res = await api.get("/admin/questions", {
+    params: { domain: questionDomain, round }
+  });
+
     return {
       mcq: res.data?.mcq_questions || [],
       desc: res.data?.desc_questions || []

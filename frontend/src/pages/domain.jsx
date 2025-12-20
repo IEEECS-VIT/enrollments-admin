@@ -13,18 +13,16 @@ import {
 import BackButton from "../components/backButton";
 
 const analyticsData = {
-  total_users_with_selection: 830,
+  total_users_with_selection: 1112,
   domain_counts: {
-    CC: 235,
-    WEB: 414,
-    EVENTS: 318,
-    APP: 136,
-    "AI/ML": 284,
-    "VIDEO EDITING": 72,
-    "UI/UX": 110,
-    PNM: 232,
-    RND: 1,
-    "GRAPHIC DESIGN": 1
+        "WEB": 536,
+        "CC": 313,
+        "AI/ML": 386,
+        "EVENTS": 448,
+        "APP": 175,
+        "PNM": 320,
+        "VIDEO EDITING": 109,
+        "UI/UX": 162,
   }
 };
 
