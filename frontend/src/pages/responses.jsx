@@ -47,6 +47,7 @@ const fetchQuestions = async () => {
       desc: res.data?.desc_questions || []
     };
   };
+const totalUsers = responses.length;
 
   const extractAnswers = (user) => {
     const list = round === 1 ? user.round1 || [] : user.round2 || [];
@@ -181,6 +182,13 @@ const fetchQuestions = async () => {
           <option value="qualified">Qualified</option>
           <option value="unqualified">Disqualified</option>
         </select>
+          <div className="sm:col-span-3 text-center mt-2">
+    <p className="text-sm text-neutral-400">Total Users</p>
+    <p className="text-2xl font-bold text-white">
+      {loading ? "—" : responses.length}
+    </p>
+  </div>
+
       </div>
 
       {accessDenied && (
@@ -228,6 +236,7 @@ const fetchQuestions = async () => {
                 
                 {user.mcqQuestions.map((q, i) => {
                   const qid = String(q.id || q.uuid);
+                  
                   const correctAnswer = q.options?.[Number(q.correctIndex)];
                   
                   const userAnswer = user.answersMap?.[qid];
