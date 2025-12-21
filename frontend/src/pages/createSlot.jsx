@@ -21,7 +21,7 @@ export default function CreateSlot() {
   const [slots, setSlots] = useState([]);
 
   const checkPassword = () => {
-    if (password === "1234") {
+    if (password === "4312") {
       setAuthenticated(true);
       setError("");
     } else {
