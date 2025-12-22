@@ -23,6 +23,7 @@ const QUESTION_DOMAIN_MAP = {
   const [status, setStatus] = useState("unmarked");
   const [loading, setLoading] = useState(true);
   const normalize = (v) => String(v ?? "").trim();
+  const [searchEmail, setSearchEmail] = useState("");
 
   const countAppearedMcqs = (user, mcqQuestions) => {
   const answers = round === 1 ? user.round1 || [] : user.round2 || [];
@@ -183,13 +184,34 @@ const totalUsers = responses.length;
           <option value="unqualified">Disqualified</option>
         </select>
           <div className="sm:col-span-3 text-center mt-2">
-    <p className="text-sm text-neutral-400">Total Users</p>
-    <p className="text-2xl font-bold text-white">
-      {loading ? "—" : responses.length}
-    </p>
+    
+
   </div>
+<input
+  type="text"
+  placeholder="Search by email"
+  value={searchEmail}
+  onChange={(e) => setSearchEmail(e.target.value)}
+  className="p-3 rounded-xl bg-black border border-neutral-700 text-white sm:col-span-3"
+/>
+
 
       </div>
+<div className="relative mb-6 max-w-xs mx-auto rounded-3xl 
+                bg-black
+                border border-neutral-700/60 
+                px-6 py-5 text-center shadow-xl">
+  
+  <p className="text-xs uppercase tracking-widest text-neutral-500">
+    people
+  </p>
+
+  <p className="mt-2 text-4xl font-bold text-white">
+    {loading ? "—" : responses.length}
+  </p>
+
+  <div className="mt-3 h-[1px] w-12 mx-auto bg-neutral-700/60 rounded-full" />
+</div>
 
       {accessDenied && (
   <div className="max-w-5xl mx-auto mb-10 px-4">
@@ -214,7 +236,12 @@ const totalUsers = responses.length;
 
 
         <div className="space-y-4 max-w-5xl mx-auto">
-          {responses.map((user, idx) => (
+          {responses
+          .filter(user =>
+            user.email.toLowerCase().includes(searchEmail.toLowerCase())
+          )
+          .map((user, idx) => (
+
             <details key={idx} className="bg-neutral-900 rounded-2xl border border-neutral-700 overflow-hidden">
               <summary className="cursor-pointer flex flex-col sm:flex-row justify-between gap-4 p-4 sm:p-6">
                 <div>
