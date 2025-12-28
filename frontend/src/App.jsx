@@ -20,7 +20,7 @@ export default function App() {
       <Route path="/schedule" element={<Schedule />} />
        <Route path="/create" element={<Create/>} />
        <Route path="/domain" element={<Domain/>} />
-      <Route path="/manage" element={<Round2 />} />
+      <Route path="/manage" element={<Sorry />} />
     </Routes>
   );
 }

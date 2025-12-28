@@ -50,12 +50,28 @@ const fetchQuestions = async () => {
   };
 const totalUsers = responses.length;
 
-  const extractAnswers = (user) => {
-    const list = round === 1 ? user.round1 || [] : user.round2 || [];
+const extractAnswers = (user) => {
+  if (round === 1) {
+    const list = user.round1 || [];
     return Object.fromEntries(
-      list.map((a) => [String(a.questionId), a.answer])
+      list.map(a => [String(a.questionId), a.answer])
     );
+  }
+
+  const list = user.round2 || [];
+
+  return {
+    github: list[0] || null,
+    others: list
+      .slice(1)
+      .flatMap(v => v.split(","))
+      .map(v => v.trim())
+      .filter(Boolean)
   };
+};
+
+
+
 
   const calculateScore = (answersMap, mcq) => {
     let score = 0;
@@ -73,8 +89,7 @@ const totalUsers = responses.length;
     });
     return score;
   };
-
-  const fetchResponses = async () => {
+const fetchResponses = async () => {
   setLoading(true);
   setAccessDenied(false);
 
@@ -83,30 +98,19 @@ const totalUsers = responses.length;
       params: { domain, round, status }
     });
 
-    let raw = [];
-
-    if (domain === "WEB" && round === 2) {
-      const rd = res.data?.items?.round2 || {};
-      raw = [
-        ...(rd.FRONTEND || []).map((u) => ({ ...u, track: "FRONTEND" })),
-        ...(rd.BACKEND || []).map((u) => ({ ...u, track: "BACKEND" }))
-      ];
-    } else {
-      raw = res.data?.items || [];
-    }
-
+    const raw = res.data?.items || [];
     const { mcq, desc } = await fetchQuestions();
 
     const computed = raw.map((user) => {
-      const appearedMcqs = countAppearedMcqs(user, mcq);
       const answersMap = extractAnswers(user);
+
       return {
         ...user,
         answersMap,
-        score: calculateScore(answersMap, mcq),
+        score: round === 1 ? calculateScore(answersMap, mcq) : null,
         mcqQuestions: mcq,
         descQuestions: desc,
-        appearedMcqs
+        appearedMcqs: round === 1 ? countAppearedMcqs(user, mcq) : null
       };
     });
 
@@ -120,6 +124,7 @@ const totalUsers = responses.length;
     setLoading(false);
   }
 };
+
 
 
   useEffect(() => {
@@ -246,7 +251,12 @@ const totalUsers = responses.length;
               <summary className="cursor-pointer flex flex-col sm:flex-row justify-between gap-4 p-4 sm:p-6">
                 <div>
                   <p className="break-all font-semibold text-lg">{user.email}</p>
-                  <p className="text-yellow-400 text-sm">Score: {user.score} / {user.appearedMcqs}</p>
+                  {round === 1 && (
+                <p className="text-yellow-400 text-sm">
+                  Score: {user.score} / {user.appearedMcqs}
+                </p>
+              )}
+
                 </div>
                 <div className="flex gap-3" onClick={(e) => e.stopPropagation()}>
                   <button onClick={() => markUser(user.email, "qualified")} className="bg-green-600 px-4 py-2 rounded-xl text-sm font-semibold">
@@ -261,7 +271,7 @@ const totalUsers = responses.length;
 
               <div className="px-4 sm:px-6 pb-6 space-y-6">
                 
-                {user.mcqQuestions.map((q, i) => {
+                {round === 1 && user.mcqQuestions.map((q, i) => {
                   const qid = String(q.id || q.uuid);
                   
                   const correctAnswer = q.options?.[Number(q.correctIndex)];
@@ -309,23 +319,60 @@ const totalUsers = responses.length;
                     
                   );
                 })}
+{round === 2 && (
+  <div className="bg-black/40 p-4 rounded-xl border border-neutral-700">
+    <p className="text-sm text-neutral-400 mb-3">
+      Submitted Links
+    </p>
 
-                {user.descQuestions.map((q) => {
-                  const qid = String(q.id || q.uuid);
-                  const userAns = user.answersMap?.[qid];
 
-                  return (
-                    <div key={qid} className="bg-black/40 p-4 rounded-xl">
-                      <p className="font-semibold">{q.question}</p>
+    {user.answersMap?.github ? (
+      <a
+        href={user.answersMap.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block text-blue-400 underline break-all"
+      >
+        GitHub Repository
+      </a>
+    ) : (
+      <p className="text-red-400 text-sm">No GitHub link</p>
+    )}
 
-                      <p className="text-red-400 mt-2 break-words">
-                        {userAns ?? "N/A"}
-                      </p>
-                    </div>
+   
+    {user.answersMap?.others?.length > 0 && (
+      <div className="mt-3 space-y-1">
+        {user.answersMap.others.map((link, idx) => (
+          <a
+            key={idx}
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-purple-400 underline break-all text-sm"
+          >
+            Other Link {idx + 1}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
-                  );
 
-                })}
+                {round === 1 && user.descQuestions.map((q) => {
+  const qid = String(q.id || q.uuid);
+  const userAns = user.answersMap?.[qid];
+
+  return (
+    <div key={qid} className="bg-black/40 p-4 rounded-xl">
+      <p className="font-semibold">{q.question}</p>
+      <p className="text-red-400 mt-2 break-words">
+        {userAns ?? "N/A"}
+      </p>
+    </div>
+  );
+})}
+
                 
               </div>
 
