@@ -9,7 +9,7 @@ export default function Manage() {
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
   const [category, setCategory] = useState("WEB");
-  const [questionType, setQuestionType] = useState("MCQ");
+  const [questionType, setQuestionType] = useState("Short Answer");
   const [search, setSearch] = useState("");
   const [mcqOptions, setMcqOptions] = useState([""]);
   const [correctIndex, setCorrectIndex] = useState("");
@@ -51,7 +51,7 @@ const isAddDisabled =
   const fetchQuestions = async () => {
     try {
       const res = await api.get("/admin/questions", {
-        params: { domain: category, round: 1 },
+        params: { domain: category, round: 2 },
       });
 
       if (!res.data || res.status === 204) {
@@ -109,7 +109,7 @@ const isAddDisabled =
     try {
       const formData = new FormData();
       formData.append("domain", category);
-      formData.append("round", "1");
+      formData.append("round", "2");
       formData.append("question", newQuestion);
 
       if (questionType === "MCQ") {
@@ -141,7 +141,7 @@ const isAddDisabled =
     await api.delete("/admin/delete-question", {
       params: {
         domain: category,
-        round: 1,
+        round: 2,
         question_type: type === "MCQ" ? "mcq" : "desc",
         question_id: id
       }
@@ -195,7 +195,7 @@ const isAddDisabled =
               Cancel
             </button>
 
-           {/* <button
+           <button
               onClick={() => {
                 handleDeleteQuestion(
                   pendingDelete.id,
@@ -207,7 +207,7 @@ const isAddDisabled =
               className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-sm font-semibold"
             >
               Delete
-            </button>*/}
+            </button>
           </div>
         </div>
       </div>
@@ -259,7 +259,7 @@ const isAddDisabled =
                   }
                 }}
               >
-                <option value="MCQ" className="bg-black">MCQ</option>
+                {/*<option value="MCQ" className="bg-black">MCQ</option>*/}
                 <option value="Short Answer" className="bg-black">Short Answer</option>
               </select>
             </div>
@@ -366,7 +366,7 @@ const isAddDisabled =
 >
 
 
-{/*<button
+<button
   onClick={() => {
     setPendingDelete({ id: q.id, type: q.type });
     setShowDeleteModal(true);
@@ -374,7 +374,7 @@ const isAddDisabled =
   className="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 px-2 py-1 rounded-md text-[10px] font-medium transition-colors"
 >
   Delete
-</button>*/}
+</button>
   <p className="text-white font-semibold">{q.text}</p>
 
   <div className="flex items-center gap-2 mt-3 relative">
@@ -415,7 +415,7 @@ const isAddDisabled =
         
       </p>
 
-{/*<button
+<button
   onClick={() => {
     setPendingDelete({ id: q.id, type: q.type });
     setShowDeleteModal(true);
@@ -423,7 +423,7 @@ const isAddDisabled =
   className="absolute bottom-2 right-2  bg-red-600 hover:bg-red-700 px-2 py-1 rounded-md text-[10px] font-medium transition-colors"
 >
   Delete
-</button>*/}
+</button>
 
 
     </>

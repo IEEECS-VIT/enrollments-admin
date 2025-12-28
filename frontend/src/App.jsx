@@ -8,6 +8,7 @@ import Schedule from "./pages/scheduling";
 import Create from "./pages/createSlot";
 import Domain from "./pages/domain"
 import Sorry from "./pages/sorry";
+import Round2 from "./pages/round2";
 
 export default function App() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
       <Route path="/schedule" element={<Schedule />} />
        <Route path="/create" element={<Create/>} />
        <Route path="/domain" element={<Domain/>} />
-      <Route path="/manage" element={<Sorry />} />
+      <Route path="/manage" element={<Round2 />} />
     </Routes>
   );
 }
