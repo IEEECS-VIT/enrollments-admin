@@ -58,6 +58,14 @@ const extractAnswers = (user) => {
     );
   }
 
+if (round === 2 && domain === "WEB") {
+  return {
+    frontend: user.frontend ?? [],
+    backend: user.backend ?? []
+  };
+}
+
+
   const list = user.round2 || [];
 
   return {
@@ -69,6 +77,7 @@ const extractAnswers = (user) => {
       .filter(Boolean)
   };
 };
+
 
 
 
@@ -98,7 +107,50 @@ const fetchResponses = async () => {
       params: { domain, round, status }
     });
 
-    const raw = res.data?.items || [];
+    let raw = [];
+
+if (round === 2 && domain === "WEB") {
+  const round2 = res.data?.items?.round2 || {};
+
+ const map = new Map();
+
+[...(round2.FRONTEND || []), ...(round2.BACKEND || [])].forEach((user) => {
+  const email = user.email;
+
+  if (!map.has(email)) {
+    map.set(email, {
+      ...user,
+      frontend: user.frontend ?? [],
+      backend: user.backend ?? []
+    });
+  } else {
+    const existing = map.get(email);
+
+map.set(email, {
+  ...existing,
+  frontend: [
+    ...new Set([
+      ...(existing.frontend ?? []),
+      ...(user.frontend ?? [])
+    ])
+  ],
+  backend: [
+    ...new Set([
+      ...(existing.backend ?? []),
+      ...(user.backend ?? [])
+    ])
+  ]
+});
+
+  }
+});
+
+raw = Array.from(map.values());
+
+} else {
+  raw = res.data?.items || [];
+}
+
     const { mcq, desc } = await fetchQuestions();
 
     const computed = raw.map((user) => {
@@ -319,19 +371,18 @@ const fetchResponses = async () => {
                     
                   );
                 })}
-{round === 2 && (
+                {round === 2 && domain !== "WEB" && (
   <div className="bg-black/40 p-4 rounded-xl border border-neutral-700">
-    <p className="text-sm text-neutral-400 mb-3">
+    <p className="text-sm uppercase tracking-wider text-neutral-400 mb-3">
       Submitted Links
     </p>
 
-
-    {user.answersMap?.github ? (
+    {user.answersMap.github ? (
       <a
         href={user.answersMap.github}
         target="_blank"
         rel="noopener noreferrer"
-        className="block text-blue-400 underline break-all"
+        className="block text-blue-400 underline break-all text-sm"
       >
         GitHub Repository
       </a>
@@ -339,8 +390,7 @@ const fetchResponses = async () => {
       <p className="text-red-400 text-sm">No GitHub link</p>
     )}
 
-   
-    {user.answersMap?.others?.length > 0 && (
+    {(user.answersMap.others || []).length > 0 && (
       <div className="mt-3 space-y-1">
         {user.answersMap.others.map((link, idx) => (
           <a
@@ -355,6 +405,57 @@ const fetchResponses = async () => {
         ))}
       </div>
     )}
+  </div>
+)}
+
+{round === 2 && domain === "WEB" && (
+  <div className="space-y-6">
+
+    <div className="bg-black/40 p-4 rounded-xl border border-neutral-700">
+      <p className="text-sm uppercase tracking-wider text-neutral-400 mb-3">
+        Frontend Submission
+      </p>
+
+      {(user.answersMap.frontend || []).length > 0 ? (
+
+        user.answersMap.frontend.map((link, idx) => (
+          <a
+            key={idx}
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-blue-400 underline break-all text-sm"
+          >
+            Frontend Link {idx + 1}
+          </a>
+        ))
+      ) : (
+        <p className="text-red-400 text-sm">No frontend submission</p>
+      )}
+    </div>
+
+    <div className="bg-black/40 p-4 rounded-xl border border-neutral-700">
+      <p className="text-sm uppercase tracking-wider text-neutral-400 mb-3">
+        Backend Submission
+      </p>
+{(user.answersMap.backend || []).length > 0 ? (
+
+        user.answersMap.backend.map((link, idx) => (
+          <a
+            key={idx}
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-purple-400 underline break-all text-sm"
+          >
+            Backend Link {idx + 1}
+          </a>
+        ))
+      ) : (
+        <p className="text-red-400 text-sm">No backend submission</p>
+      )}
+    </div>
+
   </div>
 )}
 
