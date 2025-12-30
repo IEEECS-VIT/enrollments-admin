@@ -223,9 +223,9 @@ export default function AdminResponses() {
           <option value="WEB">WEB</option>
           <option value="APP">APP</option>
           <option value="AI/ML">AI/ML</option>
-          <option value="CC">CC</option>
-          <option value="EVENTS">EVENTS</option>
-          <option value="PNM">PNM</option>
+          {round !== 2 && ( <><option value="CC">CC</option> </>)}
+          {round !== 2 && ( <><option value="EVENTS">EVENTS</option></>)}
+          {round !== 2 && ( <><option value="PNM">PNM</option></>)}
           <option value="UI/UX">UI/UX</option>
           <option value="VIDEO EDITING">Video Editing</option>
         </select>
