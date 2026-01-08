@@ -303,6 +303,11 @@ export default function AdminResponses() {
                 <summary className="cursor-pointer flex flex-col sm:flex-row justify-between gap-4 p-4 sm:p-6">
                   <div>
                     <p className="break-all font-semibold text-lg">{user.email}</p>
+                                      {user.updated_by && (
+                  <p className="text-xs text-neutral-400">
+                    Updated by: <span className="text-blue-400">{user.updated_by}</span>
+                  </p>
+                )}
                     {round === 1 && (
                       <p className="text-yellow-400 text-sm">
                         Score: {user.score} / {user.appearedMcqs}
@@ -310,6 +315,7 @@ export default function AdminResponses() {
                     )}
 
                   </div>
+                  
                   <div className="flex gap-3" onClick={(e) => e.stopPropagation()}>
                     <button onClick={() => markUser(user.email, "qualified")} className="bg-green-600 px-4 py-2 rounded-xl text-sm font-semibold">
                       Qualify
@@ -319,6 +325,8 @@ export default function AdminResponses() {
                     </button>
 
                   </div>
+
+
                 </summary>
 
                 <div className="px-4 sm:px-6 pb-6 space-y-6">
