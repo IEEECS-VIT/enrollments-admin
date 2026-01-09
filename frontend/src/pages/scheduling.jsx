@@ -10,6 +10,11 @@ const parseSlotId = (iid) => {
     panel: panel.replace("P", ""),
     round: Number(round.replace("R", ""))
   };
+
+
+};
+  const getStartTime = (slot) => {
+  return slot.time_slot.split(" - ")[0];
 };
 
 export default function Scheduling() {
@@ -116,12 +121,29 @@ export default function Scheduling() {
     return dateMatch && panelMatch;
   });
 
-  const groupedSlots = filteredSlots.reduce((acc, slot) => {
-    const { date } = parseSlotId(slot.iid);
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(slot);
-    return acc;
-  }, {});
+const groupedSlots = filteredSlots.reduce((acc, slot) => {
+  const { date } = parseSlotId(slot.iid);
+  if (!acc[date]) acc[date] = [];
+  acc[date].push(slot);
+  return acc;
+}, {});
+//sorting by time n panel for ez view
+Object.keys(groupedSlots).forEach((date) => {
+  groupedSlots[date].sort((a, b) => {
+    const timeA = getStartTime(a);
+    const timeB = getStartTime(b);
+
+    if (timeA !== timeB) {
+      return timeA.localeCompare(timeB); 
+    }
+
+    const panelA = Number(parseSlotId(a.iid).panel);
+    const panelB = Number(parseSlotId(b.iid).panel);
+
+    return panelA - panelB; 
+  });
+});
+
 
   const sortedDates = Object.keys(groupedSlots).sort();
 
