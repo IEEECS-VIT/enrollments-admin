@@ -156,8 +156,8 @@ export default function Scheduling() {
           value={round}
           onChange={(e) => setRound(Number(e.target.value))}
         >
-          <option value={1}>Round 1</option>
-          <option value={2}>Round 2</option>
+          <option value={1}>Round 2</option>
+          {/*<option value={2}>Round 2</option>*/}
         </select>
       </div>
 
@@ -211,7 +211,7 @@ export default function Scheduling() {
                     </p>
                     <p className="text-neutral-300">{slot.time_slot}</p>
                     <p className="text-neutral-400">
-                      {parsed.domain} • Round {parsed.round}
+                      {parsed.domain} • Round {parsed.round+1}
                     </p>
 
                     <p className="text-yellow-400 text-sm mt-2">
