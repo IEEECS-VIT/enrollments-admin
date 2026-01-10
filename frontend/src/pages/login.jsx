@@ -43,6 +43,7 @@ export default function Login() {
     return () => unsub();
   }, []);
 
+
   const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
