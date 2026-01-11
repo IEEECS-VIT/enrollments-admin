@@ -9,16 +9,17 @@ export default function AdminManagement() {
   const [subAdmins, setSubAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const DOMAIN_OPTIONS = [
-    "WEB",
-    "APP",
-    "AI/ML",
-    "CC",
-    "EVENTS",
-    "PNM",
-    "UI/UX",
-    "VIDEO"
-  ];
+const DOMAIN_OPTIONS = [
+  { label: "WEB", value: ["WEB"] },
+  { label: "APP", value: ["APP"] },
+  { label: "AI/ML", value: ["AI/ML"] },
+  { label: "CC", value: ["CC"] },
+  { label: "EVENTS", value: ["EVENTS"] },
+  { label: "PNM", value: ["PNM"] },
+  { label: "UI/UX", value: ["UI/UX"] },
+  { label: "VIDEO", value: ["VIDEO", "VIDEO EDITING"] }
+];
+
 
   const [newAdmin, setNewAdmin] = useState({
     email: "",
@@ -47,22 +48,29 @@ export default function AdminManagement() {
     }
   };
 
-  const toggleDomain = (domain) => {
-    setNewAdmin((p) => ({
-      ...p,
-      domains: p.domains.includes(domain)
-        ? p.domains.filter((d) => d !== domain)
-        : [...p.domains, domain]
-    }));
-  };
+const toggleDomain = (option) => {
+  setNewAdmin((p) => {
+    const exists = option.value.every(d => p.domains.includes(d));
 
-  const selectAllDomains = () => {
-    setNewAdmin((p) => ({
+    return {
       ...p,
-      domains:
-        p.domains.length === DOMAIN_OPTIONS.length ? [] : [...DOMAIN_OPTIONS]
-    }));
-  };
+      domains: exists
+        ? p.domains.filter(d => !option.value.includes(d))
+        : [...new Set([...p.domains, ...option.value])]
+    };
+  });
+};
+
+const selectAllDomains = () => {
+  const allDomains = DOMAIN_OPTIONS.flatMap(o => o.value);
+
+  setNewAdmin((p) => ({
+    ...p,
+    domains:
+      p.domains.length === allDomains.length ? [] : allDomains
+  }));
+};
+
 
   const addSubAdmin = async () => {
     if (!newAdmin.email.trim()) return;
@@ -176,21 +184,18 @@ export default function AdminManagement() {
                   />
                   Select All Domains
                 </label>
+              {DOMAIN_OPTIONS.map((option) => (
+                <label key={option.label} className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={option.value.every(d => newAdmin.domains.includes(d))}
+                    onChange={() => toggleDomain(option)}
+                    className="accent-yellow-500 scale-110"
+                  />
+                  {option.label}
+                </label>
+              ))}
 
-                {DOMAIN_OPTIONS.map((domain) => (
-                  <label
-                    key={domain}
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={newAdmin.domains.includes(domain)}
-                      onChange={() => toggleDomain(domain)}
-                      className="accent-yellow-500 scale-110"
-                    />
-                    {domain}
-                  </label>
-                ))}
               </div>
             </div>
 
