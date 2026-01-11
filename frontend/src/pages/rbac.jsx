@@ -102,6 +102,8 @@ const selectAllDomains = () => {
       </div>
       
     );
+    const ALL_DOMAINS = DOMAIN_OPTIONS.flatMap(o => o.value);
+
 
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-10 sm:py-14">
@@ -176,9 +178,8 @@ const selectAllDomains = () => {
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={
-                      newAdmin.domains.length === DOMAIN_OPTIONS.length
-                    }
+                    checked={ALL_DOMAINS.every(d => newAdmin.domains.includes(d))}
+
                     onChange={selectAllDomains}
                     className="accent-yellow-500 scale-110"
                   />
