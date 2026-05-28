@@ -83,7 +83,7 @@ export default function App() {
       <Route path="/schedule" element={<Schedule />} />
       <Route path="/create" element={<Create />} />
       <Route path="/domain" element={<Domain />} />
-      <Route path="/manage" element={<Sorry />} />
+      <Route path="/manage" element={<Manage />} />
       <Route path="/round2" element={<Round2 />} />
     </Routes>
   );
